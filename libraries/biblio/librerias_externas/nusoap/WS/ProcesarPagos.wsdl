@@ -1,0 +1,37 @@
+<definitions xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tns="http://coac.fmvz.usac.edu.gt/libraries/biblio/librerias_externas/nusoap/WS/servidor_nusoap.php" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns="http://schemas.xmlsoap.org/wsdl/" targetNamespace="http://coac.fmvz.usac.edu.gt/libraries/biblio/librerias_externas/nusoap/WS/servidor_nusoap.php">
+<types>
+<xsd:schema targetNamespace="http://coac.fmvz.usac.edu.gt/libraries/biblio/librerias_externas/nusoap/WS/servidor_nusoap.php">
+<xsd:import namespace="http://schemas.xmlsoap.org/soap/encoding/"/>
+<xsd:import namespace="http://schemas.xmlsoap.org/wsdl/"/>
+</xsd:schema>
+</types>
+<message name="procesoConfirmacionRequest">
+<part name="XML_peticion" type="xsd:string"/>
+</message>
+<message name="procesoConfirmacionResponse">
+<part name="return" type="xsd:string"/>
+</message>
+<portType name="ApplicationServicesPortType">
+<operation name="procesoConfirmacion">
+<input message="tns:procesoConfirmacionRequest"/>
+<output message="tns:procesoConfirmacionResponse"/>
+</operation>
+</portType>
+<binding name="ApplicationServicesBinding" type="tns:ApplicationServicesPortType">
+<soap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http"/>
+<operation name="procesoConfirmacion">
+<soap:operation soapAction="http://coac.fmvz.usac.edu.gt/libraries/biblio/librerias_externas/nusoap/WS/servidor_nusoap.php/procesoConfirmacion" style="rpc"/>
+<input>
+<soap:body use="encoded" namespace="http://coac.fmvz.usac.edu.gt/libraries/biblio/librerias_externas/nusoap/WS/servidor_nusoap.php" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+</input>
+<output>
+<soap:body use="encoded" namespace="http://coac.fmvz.usac.edu.gt/libraries/biblio/librerias_externas/nusoap/WS/servidor_nusoap.php" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+</output>
+</operation>
+</binding>
+<service name="ApplicationServices">
+<port name="ApplicationServicesPort" binding="tns:ApplicationServicesBinding">
+<soap:address location="http://coac.fmvz.usac.edu.gt:80/libraries/biblio/librerias_externas/nusoap/WS/servidor_nusoap.php"/>
+</port>
+</service>
+</definitions>
