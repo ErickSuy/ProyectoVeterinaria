@@ -8,6 +8,7 @@
     <meta http-equiv="Cache-Control" content="must-revalidate">
     <meta http-equiv="Cache-Control" content="post-check=0">
     <meta http-equiv="Cache-Control" content="pre-check=0">
+    
     <!-- INCLUDESCRIPT BLOCK : ihead -->
 
     <script language='javascript'>
@@ -586,7 +587,6 @@
                                                                                         <input name="txtEstadoActividad" type="hidden" id="txtEstadoActividad" size="3" maxlength="3" value="{txtEstadoActividad}"/>
                                                                                     </label>&nbsp;</td>
                                                                             </tr>
-
                                                                             <tr>
                                                                                 <td class="page_col1">Nombre de la actividad</td>
                                                                                 <td class="page_col2">
@@ -614,6 +614,7 @@
                                                                             <tr>
                                                                                 <td class="page_col1">Fecha de actividad</tI></td>
                                                                                 <td class="page_col2">
+                                                                                    
                                                                                     <input id="txtFechaRealizar" name="txtFechaRealizar" data-options="formatter:myformatter,parser:myparser" style="width: inherit;" class="easyui-datebox" size="15" editable="false" value="{txtFechaRealizar}"/>
                                                                                 </td>
                                                                                 <td>

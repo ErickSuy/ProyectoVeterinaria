@@ -268,10 +268,9 @@
                                                                    <thead>
                                                                    <tr>
                                                                        <th align="center"> Carné</th>
-                                                                       <th align="center"> Nota Existente<br> Procesada por Otro Encargado(1)</th>
-                                                                       <th align="center"> Nota Existente<br> Procesada por Usted(2)</th>
-                                                                       <th align="center"> Nota Nueva<br> Procesada por Usted(3)</th>
-                                                                       <th align="center"> Nota Nueva<br> No Procesada<br> Menor a la Existente(4)</th>
+                                                                       <th align="center"> Nota Existente</th>
+                                                                       <th align="center"> Nota Nueva</th>
+                                                                       <th align="center"> Observacion</th>
                                                                    </tr>
                                                                    </thead>
                                                                     <tbody>
@@ -280,35 +279,30 @@
                                                                         <td align="center"> {elCarnet} </td>
                                                                         <td align="center"> {laNota1_1} </td>
                                                                         <td align="center"> {laNota1_2} </td>
-                                                                        <td align="center"> {laNota1_3} </td>
-                                                                        <td align="center"> {laNota1_4} </td>
+                                                                        <td align="center"> {observacion} </td>
                                                                     </tr>
                                                                     <!-- END BLOCK : errorManejable -->
                                                                     <tr>
                                                                         <td align="center" colspan='5'> &nbsp; </td>
                                                                     </tr>
                                                                     <tr>
-                                                                        <td colspan='5'>
-                                                                            (1) Son las notas ya existentes en la base de datos, procesadas en otra secci&oacute;n
-                                                                            de laboratorio,<br>
-                                                                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mayores a las notas enviadas por usted
-                                                                            en esta oportunidad.<br>
-                                                                            (2) Son las notas ya existentes en la base de datos, procesadas por usted en una
-                                                                            ocasi&oacute;n anterior,<br>
-                                                                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mayores a las notas enviadas en esta
-                                                                            oportunidad.<br>
-                                                                            (3) Son las notas enviadas por usted en esta oportunidad, y que son mayores a
-                                                                            las notas ya existentes<br>
-                                                                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;en la base de datos, procesadas en una
-                                                                            ocasi&oacute;n anterior.<br>
-                                                                            (4) Son las notas enviadas por usted en esta oportunidad, y que son menores a
-                                                                            las notas ya existentes<br>
-                                                                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;en la base de datos, procesadas en una
-                                                                            ocasi&oacute;n anterior.<br>
+                                                                        <td class="page_col1">Nota</td>
+                                                                        <td class="page_col2" colspan='4'>
+                                                                            <div align="justify">
+                                                                                <p class="note-font-style">
+                                                                                    * CASO (1) sucede cuando la nota existente en la base de datos es mayor, pero el responsable
+                                                                                    de la actividad no es actualmente usted.<br></br>
+                                                                                    * CASO (2) sucede cuando la nota existente en la base de datos es mayor y usted 
+                                                                                    es el responsable de la actividad; se le recomienda que revise los datos de esta carga.<br></br>
+                                                                                    * CASO (3) sucede cuando la nota existente es mayor a cero, y la nueva nota supera la agregada
+                                                                                    en alguna oportunidad anterior; se le recomienda que revise los datos de esta carga.<br></br>
+                                                                                </p>
+                                                                            </div>
                                                                         </td>
                                                                     </tr>
                                                                     </tbody>
                                                                 </table>
+                                                                    
                                                             </div>
                                                             </p>
                                                             <!-- END BLOCK : erroresManejables -->
@@ -323,8 +317,8 @@
                                                                     <table class="RAsig-table" align='center' width='80%' cellspacing='0' cellpadding='0' border='0'>
                                                                         <thead>
                                                                         <tr>
-                                                                            <th width="60%" align="center">CARNET</th>
-                                                                            <th width="40%" align="right">NOTA INVÁLIDA</th>
+                                                                            <th width="60%" align="right">CARNET</th>
+                                                                            <th width="40%" align="right">NOTA INVÁLIDA max[{notaMax}]pts</th>
                                                                         </tr>
                                                                         </thead>
                                                                         <tbody>
@@ -346,7 +340,7 @@
                                                     </div>
                                                 </div>
                                                 <div id="buttons">
-                                                    <input type="submit" name="Regresar" id="Regresar" value="Regresar a listado de actividades" class="nbtn rbtn btn_midi btn_exp_h okbutton" onclick='javascript:redireccionar("../notas-actividades/creaactividad.php?opcion=9&curso={AtxtCurso}&index={AtxtIndex}&carrera={AtxtCarrera}&seccion={AtxtSeccion}");'/>
+                                                    <input type="submit" name="Regresar" id="Regresar" value="Regresar a listado de actividades" class="nbtn rbtn btn_midi btn_exp_h okbutton" onclick='javascript:redireccionar("../notas-actividades/crearActividad.php?opcion=1&curso={AtxtCurso}&index={AtxtIndex}&carrera={AtxtCarrera}&docentes={AtxtDocentes}");'/>
                                                 </div>
                                                 <div class="clear"></div>
                                             </div>

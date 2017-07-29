@@ -1,4 +1,4 @@
-<?
+<?php
 include("../../path.inc.php");
 include_once("$dir_biblio/biblio/SysConstant.php");
 include_once("$dir_portal/fw/model/DB_Connection.php");
@@ -37,6 +37,33 @@ function sesionAunActiva($bd) {
   else
     return false;
   }
+  
+/*Nueva funcion para validar el Sistema habilitado Erick suy 2017*/  
+function verifar_habilitacionSistema($bd,$txtPeriodo,$txtAnio,$txtCurso,$txtSeccion,$txtRegPer,$select){
+    
+    /*Select :
+            1 - verificacion para mostrar cursos
+     *      2 - verificacion para observar unicamente el listado junto con la aprobacion de notas
+     *      3 -      */
+    
+    global $gsql_na_c;
+    $sqlbusca= $gsql_na_c->sistemaHabilitado_select1($txtPeriodo,$txtAnio,$txtCurso,$txtSeccion);
+    $bd->query($sqlbusca);
+    if($bd->num_rows()>0) {
+        $regCalendario=$bd->next_record();
+	$regCalendario=$bd->r();				  
+        $fechaInicio = trim($regCalendario["inicioperiodo"]);
+        $fechaFin    = trim($regCalendario["finalperiodo"]);
+        $fechahoy    = date("Y")."-".date("m")."-".date("d");
+        if (($fechahoy >= $fechaInicio) && ($fechahoy <= $fechaFin))
+          return 100; //Sistema habilitado y aún en fecha para el ingreso de actividades retorna 100
+        else 
+          return 2; // el sistema no se encuentra habilitado para el ingreso de actividades.
+    }
+    else
+        return 1; // Calendario de actividades sin registrar en BDD aún
+}
+  
 
 function sistemaHabilitado($bd,$txtPeriodo,$txtAnio,$txtCurso,$txtSeccion,$txtRegPer) {
     global $gsql_na_c;
@@ -51,7 +78,7 @@ function sistemaHabilitado($bd,$txtPeriodo,$txtAnio,$txtCurso,$txtSeccion,$txtRe
     $fechaFin    = trim($regCalendario["finalperiodo"]);
     $fechahoy    = date("Y")."-".date("m")."-".date("d");
     if (($fechahoy >= $fechaInicio) && ($fechahoy <= $fechaFin))
-      return 100; //Sistema habilitado y aún en fecha para el ingreso de actividades
+      return 100; //Sistema habilitado y aún en fecha para el ingreso de actividades retorna 100
     else { //Sistema habilitado pero fuera de fecha para el ingreso de actividades
 //      $sqlbusca="select distinct pertenecea from ing_actividad where activo=1 and periodo='" . $txtPeriodo . "' and anio=". $txtAnio .
 //	            " and regper='" . $txtRegPer . "' and curso='" . $txtCurso . "' and seccion='" . $txtSeccion . "' order by pertenecea";

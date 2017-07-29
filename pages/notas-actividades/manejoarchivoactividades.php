@@ -81,7 +81,7 @@ function truncaCarnet($carnet)
     return $tmpCarnet;
 }
 
-function bloqueCargaNotas($txtCurso, $txtSeccion, $txtPeriodo, $txtAnio, $txtTipoActividad, $txtIdActividad, $txtEsSuperActividad, $tpl, $bd, $txtCarrera)
+function bloqueCargaNotas($txtIdActividad,$txtCurso,$txtCarrera,$txtAnio,$txtPeriodo,$txtSeccion,$txtTipoActividad,$txtEsSuperActividad,$tpl,$bd)
 {
     global $gsql_na_maa;
     global $obj_cad;
@@ -92,7 +92,8 @@ function bloqueCargaNotas($txtCurso, $txtSeccion, $txtPeriodo, $txtAnio, $txtTip
 //					  "' and a.seccion='" . $txtSeccion . "' and a.regper='" . $_SESSION['regper'] . 
 //					  "' and t.idtipoactividad=" . $txtTipoActividad . " and a.idactividad=" . $txtIdActividad;
 
-    $SqlNombreActividad = $gsql_na_maa->bloqueCargaNotas_select1($txtPeriodo, $txtAnio, $txtCurso, $txtCarrera/*$txtSeccion*/, $_SESSION['regper'], $txtTipoActividad, $txtIdActividad);
+    //$SqlNombreActividad = $gsql_na_maa->bloqueCargaNotas_select1($txtPeriodo, $txtAnio, $txtCurso, $txtCarrera/*$txtSeccion*/, $_SESSION['regper'], $txtTipoActividad, $txtIdActividad);
+    $SqlNombreActividad = $gsql_na_maa->queryGetInfoActividad($txtIdActividad);
     $bd->query($SqlNombreActividad);
     if ($bd->num_rows() > 0) {
         $bd->next_record();
@@ -105,8 +106,8 @@ function bloqueCargaNotas($txtCurso, $txtSeccion, $txtPeriodo, $txtAnio, $txtTip
             $_tituloActividad = $FilaDato["nombre_t"];
         }
     }
-    if ($_tituloActividad != "")
-        $_tituloActividad = "DE " . $_tituloActividad;
+    //if ($_tituloActividad != "")
+    //    $_tituloActividad = "DE" . $_tituloActividad;
 
     $tpl->newblock("carganotas");
     $tpl->assign("vCurso", $txtCurso);
@@ -150,6 +151,66 @@ function notasYaExistentes($txtCurso, $txtSeccion, $txtPeriodo, $txtAnio, $txtTi
         }
     }
     return $_vector;
+}
+
+function getNotasExistentes($txtIdActividad,$regPersonal,$bd){
+    global $gsql_na_maa;
+    $_vector = array();
+
+    $sqlQuery = $gsql_na_maa->queryNotaExistentes($txtIdActividad,$regPersonal);
+
+    $bd->query($sqlQuery);
+    $total = $bd->num_rows();
+    if ($total > 0) {
+        for ($i = 0; $i < $total; $i++) {
+            $bd->next_record();
+            $FilaDato = $bd->r();            
+            $_vector[$FilaDato["carnet"]]["nota"] = $FilaDato["notaobtenida"];
+            $_vector[$FilaDato["carnet"]]["responsable"] = $FilaDato["responsable"];
+        }
+    }
+    return $_vector;
+    
+}
+
+
+function cambiarNotasExistentes($bd,$_notasExistentes, $carnet, $nota,$regPersonal,$IdActividad, &$_erroresManejables1, &$_listaErrores1)
+{
+    global $gsql_na_maa;    
+    
+    $cambiarNota = true;
+    if (sizeof($_notasExistentes) > 0) {
+        if (isset($_notasExistentes[$carnet])) {
+            if ($_notasExistentes[$carnet]["nota"] > $nota) {
+                
+                if($_notasExistentes[$carnet]["responsable"]==$regPersonal){
+                    $_listaErrores1[$_erroresManejables1]["carnet"] = $carnet;
+                    $_listaErrores1[$_erroresManejables1]["nota_existente"] = $_notasExistentes[$carnet]["nota"];
+                    $_listaErrores1[$_erroresManejables1]["nueva_nota"] = $nota;
+                    $_listaErrores1[$_erroresManejables1]["caso"] = 2;
+                    $_erroresManejables1++;
+                }else{
+                    $_listaErrores1[$_erroresManejables1]["carnet"] = $carnet;
+                    $_listaErrores1[$_erroresManejables1]["nota_existente"] = $_notasExistentes[$carnet]["nota"];
+                    $_listaErrores1[$_erroresManejables1]["nueva_nota"] = $nota;
+                    $_listaErrores1[$_erroresManejables1]["caso"] = 1;
+                    $_erroresManejables1++;
+                    $cambiarNota = false;
+                }
+            } else { //nota existente menor que nueva nota que se esta procesando
+                if ($_notasExistentes[$carnet]["nota"] > 0 && $_notasExistentes[$carnet]["nota"]!=$nota) {
+                   // if ($_notasExistentes[$carnet]["secactividad"] != $txtSeccion) {
+                        $_listaErrores1[$_erroresManejables1]["carnet"] = $carnet;
+                        $_listaErrores1[$_erroresManejables1]["nota_existente"] = $_notasExistentes[$carnet]["nota"];
+                        $_listaErrores1[$_erroresManejables1]["nueva_nota"] = $nota;
+                        $_listaErrores1[$_erroresManejables1]["caso"] = 3;
+                        $_erroresManejables1++;
+                    //}
+                }
+            }
+        }
+    }
+    return $cambiarNota;
 }
 
 
@@ -211,12 +272,21 @@ function guardaNotasNoAsignados($bd, $_noAsignados, $txtCurso, $txtTipoActividad
                 $_ocurrioError = true;
             else {
                 /*
-                IMPORTANTE: No es factible eliminar las notas de (TODOS) los no asignados, de la tabla ing_notasactividadesguardadas que hayan sido procesadas durante el período/año del curso para el que se procesan notas de actividades debido a que dichas notas pudieron haber sido procesadas por distintos encargados de las prácticas, sin embargo, se podría analizar la posibilidad de eliminar únicamente las notas de aquellos que se están incluyendo en un archivo específico para los que ya existan notas procesadas en ese período/año en dicha tabla. Por el momento dicha funcionalidad no será incluida en esta versión.
+                IMPORTANTE: No es factible eliminar las notas de (TODOS) los no asignados, de la 
+                 * tabla ing_notasactividadesguardadas que hayan sido 
+                 * procesadas durante el período/año del curso para el que se procesan notas 
+                 * de actividades debido a que dichas notas pudieron haber sido procesadas por 
+                 * distintos encargados de las prácticas, sin embargo, se podría analizar la 
+                 * posibilidad de eliminar únicamente las notas de aquellos que se están 
+                 * incluyendo en un archivo específico para los que ya existan notas procesadas 
+                 * en ese período/año en dicha tabla. Por el momento dicha funcionalidad 
+                 * no será incluida en esta versión.
                 */
 
-                // 1. Trasladar las notas de los no asignados al segmento de bitácora; tomando en cuenta carnet, curso y tipoactividad para las
-                //    que hayan caducado la vigencia. El mejor lugar para realizar esta tarea es en la página de habilitación del sistema, igual
-                //    que el módulo de ingreso de notas de examen final.
+                // 1. Trasladar las notas de los no asignados al segmento de bitácora; tomando en 
+                //    cuenta carnet, curso y tipoactividad para las que hayan caducado la vigencia. 
+                //    El mejor lugar para realizar esta tarea es en la página de habilitación del 
+                //    sistema, igual que el módulo de ingreso de notas de examen final.
 
                 // 2. Buscar las notas de los no asignados, pero que ya existen con el mismo valor en ing_notasactividadesguardadas y eliminarlas
                 //    de la tabla temporal en donde se almacenen los no asignados.
@@ -402,15 +472,14 @@ switch ($opcion) {
         $txtPeriodo = $_GET['txtPeriodo'];
         $txtAnio= $_GET['txtAnio'];
         $txtTipoActividad = $_GET['txtTipoActividad'];
-        $txtEsSuperActividad = $_GET['txtEsSuperActividad'];
         $txtCarrera = $_GET['txtCarrera'];
 
         $tpl->assign("AtxtCurso",$txtCurso);
         $tpl->assign("AtxtIndex",$_SESSION['index']);
         $tpl->assign("AtxtCarrera",$txtCarrera);
         $tpl->assign("AtxtSeccion",$txtSeccion);
-
-        bloqueCargaNotas($txtCurso, $txtSeccion, $txtPeriodo, $txtAnio, $txtTipoActividad, $txtIdActividad, $txtEsSuperActividad, $tpl, $bd, $txtCarrera);
+        $tpl->assign("AtxtDocentes",$_SESSION["docentes"]);
+        bloqueCargaNotas($txtIdActividad,$txtCurso, $txtCarrera, $txtAnio, $txtPeriodo, $txtSeccion, $txtTipoActividad, 0,$tpl,$bd);
         break;
     // del case 20 de despliegue de la opcion carga archivo notas
 
@@ -419,8 +488,9 @@ switch ($opcion) {
         $txtSeccion = $_POST['txtSeccion'];
         $txtPeriodo = $_POST['txtPeriodo'];
         $txtAnio= $_POST['txtAnio'];
+        
         $txtTipoActividad = $_POST['txtTipoActividad'];
-        $txtEsSuperActividad = $_POST['txtEsSuperActividad'];
+        $txtEsSuperActividad = 0;//aun nose porque pero 0 funciona jaj
         $txtCarrera = $_POST['txtCarrera'];
         $txtIdActividad = $_POST['txtIdActividad'];
         $txtPonderacionActividad = $_POST['txtPonderacionActividad'];
@@ -429,6 +499,7 @@ switch ($opcion) {
         $tpl->assign("AtxtIndex",$_SESSION['index']);
         $tpl->assign("AtxtCarrera",$txtCarrera);
         $tpl->assign("AtxtSeccion",$txtSeccion);
+        $tpl->assign("AtxtDocentes",$_SESSION["docentes"]);
 
         $nombre_archivo = $_FILES["userfile"]["name"];
         $nombre_archivo = str_replace(" ", "_", $nombre_archivo);
@@ -437,22 +508,32 @@ switch ($opcion) {
         $ubicacion = 'notas-secciones/';
         //datos del arhivo
         $destino = $ubicacion . $txtCurso . $txtCarrera . $txtPeriodo . $txtAnio . $txtTipoActividad;
+        $otromensajeBorrar="";
         $_tipoArchivoIncorrecto = false;
-        if (strcmp($tipo_archivo, "text/plain") != 0 && strcmp($tipo_archivo, "application/vnd.ms-excel") != 0)
+        $mimes = array('application/vnd.ms-excel','text/plain','text/csv','text/tsv');
+
+  // do something
+        if (!in_array($tipo_archivo,$mimes)){
             $_tipoArchivoIncorrecto = true;
-        else {
+            //$otromensajeBorrar="formato incorrecto"+$tipo_archivo   ;
+        }else {
             $_extensionArchivo = @strtolower(@strrchr($nombre_archivo, "."));
-            if (@strpos($_extensionArchivo, '.') === false)
+            if (@strpos($_extensionArchivo, '.') === false){
                 $_tipoArchivoIncorrecto = true;
-            else {
+                //$otromensajeBorrar="encontrando extencion";
+            }else {
                 $_extensionArchivo = @substr($_extensionArchivo, 1);
-                if (strtolower(trim($_extensionArchivo)) != "txt" && strtolower(trim($_extensionArchivo)) != "csv")
+                if (strtolower(trim($_extensionArchivo)) != "txt" && strtolower(trim($_extensionArchivo)) != "csv"){
                     $_tipoArchivoIncorrecto = true;
+                    //$otromensajeBorrar="verificando extension.";
+                }
+                    
             }
         }
         if ($_tipoArchivoIncorrecto === true) {
-            bloqueCargaNotas($txtCurso, $txtSeccion, $txtPeriodo, $txtAnio, $txtTipoActividad, $txtIdActividad,
-                $txtEsSuperActividad, $tpl, $bd, $txtCarrera);
+            bloqueCargaNotas($txtIdActividad,$txtCurso, $txtCarrera, $txtAnio, $txtPeriodo, $txtSeccion, $txtTipoActividad, 0,$tpl,$bd);
+            //bloqueCargaNotas($txtCurso, $txtSeccion, $txtPeriodo, $txtAnio, $txtTipoActividad, $txtIdActividad,
+            //    $txtEsSuperActividad, $tpl, $bd, $txtCarrera);
             $tpl->newblock("mensaje");
             $_mensajeTxt = "* Imposible cargar el archivo para procesarlo ...<br>" .
                 "* El archivo deber ser un archivo separado por por comas con extensión .CSV o .TXT ...<br>";
@@ -469,26 +550,30 @@ switch ($opcion) {
                 $_erroresManejables = 0;
                 $_erroresManejables1 = 0;
                 //$_listaErrores="[  carne  ][nota]<br>";
-//Aquí se debiera llamar a la consulta que obtiene los datos ya existentes en BDD de esa actividad para tomarlos en cuenta
-//a la hora de procesar el archivo, de tal forma que si un estudiante ya tiene nota en dicha actividad y la misma es mayor que la
-//que se está reportando en esta oportunidad se le informe al encargado lo adecuado de acuerdo a cada uno de los siguientes casos:
-//   -  Si la sección de la nota con la que se procesó dicho dato es distinta a la del encargado, dicha nota no podrá sustituir la
-//      ya existente debido a que la nota mayor prevalece.
-//   -  Si la sección de la nota con la que se procesó dicho dato es igual a la del encargado, dicha nota se sustituirá pero debe
-//      aconsejarse al encargado que revise su información para ver si no se equivocó al enviar nuevamente el archivo.
+//Aquí se debiera llamar a la consulta que obtiene los datos ya existentes en BDD 
+//de esa actividad para tomarlos en cuenta a la hora de procesar el archivo, 
+//de tal forma que si un estudiante ya tiene nota en dicha actividad y la misma es mayor que la
+//que se está reportando en esta oportunidad se le informe al encargado lo adecuado de acuerdo 
+//a cada uno de los siguientes casos:
+//   -  Si la sección de la nota con la que se procesó dicho dato es distinta a la del 
+//      encargado, dicha nota no podrá sustituir la ya existente debido a que la nota mayor 
+//      prevalece.
+//   -  Si la sección de la nota con la que se procesó dicho dato es 
+//      igual a la del encargado, dicha nota se sustituirá pero debe aconsejarse al encargado 
+//      que revise su información para ver si no se equivocó al enviar nuevamente el archivo.
 //Lo mejor será utilizar un vector para guardar dicha información para efectos de comparación.
-                $_notasExistentes = notasYaExistentes($txtCurso, $txtSeccion, $txtPeriodo, $txtAnio, $txtTipoActividad, $txtIdActividad,
-                    $txtEsSuperActividad, $tpl, $bd);
+                //$_notasExistentes = notasYaExistentes($txtCurso, $txtSeccion, $txtPeriodo, $txtAnio, $txtTipoActividad, $txtIdActividad,
+                  //  $txtEsSuperActividad, $tpl, $bd);
+                
+                $_notasExistentes = getNotasExistentes($txtIdActividad,$_SESSION['regper'], $bd);
+                //print_r ($_notasExistentes);
                 $_listaErrores = array();
                 $_listaErrores1 = array();
                 $_noAsignados = array();
                 $_practicasCivil = array("10", "11", "12", "13", "14");
                 // inicio de transaccion
-//					   $bd->query("begin");
-
                 $bd->query($gsql_na_maa->begin());
 
-                //
                 while (!feof($fp)) {
                     $_errorManejable = false;
                     $linea = fgets($fp, 4096);
@@ -497,10 +582,9 @@ switch ($opcion) {
                     if ($contador > 1) {
                         if ($linea != "") {
                             //$linea=trim($linea);
-                            $coma = strpos($linea, ",");
-                            if ($coma == 0) {
-                                bloqueCargaNotas($txtCurso, $txtSeccion, $txtPeriodo, $txtAnio, $txtTipoActividad, $txtIdActividad,
-                                    $txtEsSuperActividad, $tpl, $bd, $txtCarrera);
+                            $datos = explode(",", $linea);
+                            if(count($datos)!=2){
+                                bloqueCargaNotas($txtIdActividad,$txtCurso, $txtCarrera, $txtAnio, $txtPeriodo, $txtSeccion, $txtTipoActividad, 0,$tpl,$bd);
                                 $tpl->newblock("mensaje");
 
                                 $_mensajeTxt = "* Imposible cargar el archivo para procesarlo ...<br>" .
@@ -515,158 +599,111 @@ switch ($opcion) {
 
                                 $ocurrioError = true;
                                 break;
-                            } else {
-                                $carnet = trim(substr($linea, 0, $coma));
-                                $carnet = CompletaCarnet($carnet);
-                                $nota = trim(substr($linea, $coma + 1, strlen($linea)));
-                                $coma2 = strpos($nota, ",");
-                                if ($coma2 > 0 || trim($nota) == ",") {
-                                    bloqueCargaNotas($txtCurso, $txtSeccion, $txtPeriodo, $txtAnio, $txtTipoActividad, $txtIdActividad,
-                                        $txtEsSuperActividad, $tpl, $bd, $txtCarrera);
-                                    $tpl->newblock("mensaje");
-
-                                    $_mensajeTxt = "* Imposible cargar el archivo para procesarlo ...<br>" .
-                                        "* El archivo no tiene la estructura correcta ...<br>" .
-                                        "* Recuerde que en la primera columna debe ir el carnet y en la siguiente la nota en puntos netos ...<br>".
-                                        "* El archivo deber ser un archivo separado por por comas con extensión .CSV o .TXT ...<br>".
-                                        "* Solamente se puede procesar la nota de una actividad por cada archivo ...<br>";
-
-                                    $tpl->assign("mensaje", $_mensajeTxt);
-                                    $tpl->assign("aTipoMensaje",'danger');
-                                    $tpl->assign("aEncabezadoMensaje",'ARCHIVO NO CARGADO');
-
-                                    $ocurrioError = true;
-                                    break;
+                            }else{
+                                $carnet = CompletaCarnet($datos[0]);
+                                $nota = $datos[1];
+                                
+                                if($nota=="nsp"){
+                                    $nota=-1;
                                 }
                                 if (is_numeric($nota)) {
-                                    if ($nota < 0 || $nota > $txtPonderacionActividad)
+                                    if ($nota < -2 || $nota > $txtPonderacionActividad){
                                         $_errorManejable = true;
-                                    else{
-                                        $nota = round($nota,2);
-                                    }
-                                } else
-                                    $_errorManejable = true;
-                                if ($_errorManejable === false) {
-                                    $_cambiaNotaExistente = verificaNotasExistentes($_notasExistentes, $carnet, $nota, $txtCarrera/*$txtSeccion*/,
-                                        $_erroresManejables1, $_listaErrores1);
-                                    if ($_cambiaNotaExistente === true) {
-                                        if ($txtEsSuperActividad == 1) {
-//										     $SqlUpdateExtra=" and ing_actividad.tipoactividad=$txtTipoActividad ";
-
-                                            $SqlUpdateExtra = $gsql_na_maa->_update1_1($txtTipoActividad);
-
-//										     $seccionActividad=", seccionactividad[ing_actividad.posicion]='" . $txtSeccion . "'";
-
-                                            $seccionActividad = $gsql_na_maa->_update1_2( $txtCarrera/*$txtSeccion*/);
-
-                                        } else {
-//										     $SqlUpdateExtra=" and ing_actividad.idactividad=$txtIdActividad ";
-
-                                            $SqlUpdateExtra = $gsql_na_maa->_update1_3($txtIdActividad);
-
-//										     $seccionActividad="";
-
-                                            $seccionActividad = $gsql_na_maa->_update1_4();
-
-                                        }
-//										   $update= " update ing_notasactividad
-//												    set actividades[ing_actividad.posicion]=$nota" . $seccionActividad .
-//												    "  from ing_actividad
-//												    where
-//												    ing_notasactividad.carnet='$carnet'
-//												    $SqlUpdateExtra 
-//												    and ing_actividad.curso='$txtCurso'
-//												    and ing_actividad.periodo='$txtPeriodo'
-//												    and ing_actividad.anio=$txtAnio
-//												    and ing_actividad.activo=1
-//												    and ing_actividad.curso=ing_notasactividad.curso
-//												    and ing_actividad.seccion=ing_notasactividad.seccion
-//												    and ing_actividad.periodo=ing_notasactividad.periodo
-//												    and ing_actividad.anio=ing_notasactividad.anio
-//									                " ;
-
-                                        $update = $gsql_na_maa->_update1($nota, $seccionActividad, $carnet, $SqlUpdateExtra, $txtCurso, $txtPeriodo, $txtAnio);
-                                        $bd->query($update);
-                                        if ($bd->affected_rows() == 0 && $txtEsSuperActividad == 1 &&
-                                            in_array($txtTipoActividad, $_practicasCivil) && $nota > 60
-                                        ) {
-                                            $_txtAnio2 = $txtAnio + 2;
-                                            $_noAsignados[] = truncaCarnet($carnet) . "|" . $txtCurso . "|" . $nota . "|" .
-                                                $txtTipoActividad . "|" . $txtPeriodo . "|" . $txtAnio . "|" .
-                                                $txtPeriodo . "|" . $_txtAnio2 . "|1";
-                                        }
+                                    }else{
+                                        $nota = round($nota, 2);
                                     }
                                 } else {
-                                    //$_listaErrores = $_listaErrores . "[" . $carnet . "][" . $nota . "]<br>";
+                                    $_errorManejable = true;
+                                }
+                                //print_r($_errorManejable."  -- ".$nota);
+                                if ($_errorManejable === false) {
+                                    $_cambiaNotaExistente = cambiarNotasExistentes($bd,$_notasExistentes, $carnet, $nota, $_SESSION['regper'], $txtIdActividad, $_erroresManejables1, $_listaErrores1);
+                                    if ($_cambiaNotaExistente === true) {
+                                        $reg = $_SESSION['regper'];
+                                        $goup = $_SESSION['group'];
+                                        $query = "select * from actualizarNotasActividad($reg,$group,'$txtIdActividad','$nota',$carnet);";
+                                        $bd->query($query);
+                                        $resultado = "";
+                                        while (($bd->next_record()) != null) {
+                                            $InsertResult = $bd->r();
+                                            if(strpos($InsertResult[0], "asignado")>0){
+                                                $_listaErrores[$_erroresManejables][0] = $carnet;
+                                                $_listaErrores[$_erroresManejables][1] = "Estudiante no Asignado";
+                                                $_erroresManejables++;
+                                            }
+                                            $resultado.=$InsertResult[0];
+                                            
+                                           /* $_listaErrores[$_erroresManejables][0] = $carnet;
+                                            $_listaErrores[$_erroresManejables][1] = $resultado . " " . $nota;
+                                            $_erroresManejables++;*/
+                                        }
+                                        
+                                        /// agregar cambios a la bitacora de actividades
+                                        
+                                    }
+                                }//fin del if $_errorManejable === false
+                                else {
                                     $_listaErrores[$_erroresManejables][0] = $carnet;
                                     $_listaErrores[$_erroresManejables][1] = $nota;
                                     $_erroresManejables++;
                                 }
-
-
-                            } // del if lin
+                            }//fin del if == contador 2
+                            
                         }// del if contador>1
-                    }
+                    }//fin del contador >1
 
-                } // del else de coma==0
+                } // while linea
 
                 // fin de transaccion
                 if ($_ocurrioError === false && sizeof($_noAsignados) > 0) {
-                    $_ocurrioError = guardaNotasNoAsignados($bd, $_noAsignados, $txtCurso, $txtTipoActividad, $txtPeriodo, $txtAnio);
+                    //$_ocurrioError = guardaNotasNoAsignados($bd, $_noAsignados, $txtCurso, $txtTipoActividad, $txtPeriodo, $txtAnio);
                 }
                 if ($_ocurrioError === false) {
                     if ($_erroresManejables > 0 || $_erroresManejables1 > 0) {
-// 					 $bd->query("commit");
-
                         $bd->query($gsql_na_maa->commit());
-
-//					    $bd->query("end");
-
                         $bd->query($gsql_na_maa->end());
-
-                        bloqueCargaNotas($txtCurso, $txtSeccion, $txtPeriodo, $txtAnio, $txtTipoActividad, $txtIdActividad,
-                            $txtEsSuperActividad, $tpl, $bd, $txtCarrera);
+                        // fin de la transaccion.
+                        bloqueCargaNotas($txtIdActividad,$txtCurso, $txtCarrera, $txtAnio, $txtPeriodo, $txtSeccion, $txtTipoActividad, 0,$tpl,$bd);
+                        
                         if ($_erroresManejables1 > 0) {
                             $tpl->newblock("erroresManejables");
                             $_mensajeTxt = "Se encontraron algunas notas ya existentes en la base de datos, procesadas anteriormente.<br>" .
                                 "Por lo que se sugiere revisar detenidamente el siguiente listado, dentro de su archivo:<br>";
                             $tpl->assign("mensaje1", $_mensajeTxt);
+                            $observacion="";
                             for ($i = 0; $i < $_erroresManejables1; $i++) {
                                 $tpl->newblock("errorManejable");
                                 $tpl->assign("elCarnet", $_listaErrores1[$i]["carnet"]);
                                 switch ($_listaErrores1[$i]["caso"]) {
                                     case 1 :
                                         $laNota1_1 = $_listaErrores1[$i]["nota_existente"];
-                                        $laNota1_2 = "&nbsp;";
-                                        $laNota1_3 = "&nbsp;";
-                                        $laNota1_4 = $_listaErrores1[$i]["nueva_nota"];
+                                        $laNota1_2 = $_listaErrores1[$i]["nueva_nota"];
+                                        $observacion="No se actualizo nota. *caso 1";
                                         break;
                                     case 2 :
-                                        $laNota1_1 = "&nbsp;";
-                                        $laNota1_2 = $_listaErrores1[$i]["nota_existente"];
-                                        $laNota1_3 = $_listaErrores1[$i]["nueva_nota"];
-                                        $laNota1_4 = "&nbsp;";
+                                        $laNota1_1 = $_listaErrores1[$i]["nota_existente"];
+                                        $laNota1_2 = $_listaErrores1[$i]["nueva_nota"];
+                                        $observacion="Se actualizo nota. *caso 2";
                                         break;
                                     case 3 :
                                         $laNota1_1 = $_listaErrores1[$i]["nota_existente"];
-                                        $laNota1_2 = "&nbsp;";
-                                        $laNota1_3 = $_listaErrores1[$i]["nueva_nota"];
-                                        $laNota1_4 = "&nbsp;";
+                                        $laNota1_2 = $_listaErrores1[$i]["nueva_nota"];
+                                        $observacion="Se actualizo nota. *caso 3";
                                         break;
                                 }
                                 $tpl->assign("laNota1_1", $laNota1_1);
                                 $tpl->assign("laNota1_2", $laNota1_2);
-                                $tpl->assign("laNota1_3", $laNota1_3);
-                                $tpl->assign("laNota1_4", $laNota1_4);
+                                $tpl->assign("observacion",$observacion);
                             }
                         }
                         if ($_erroresManejables > 0) {
                             $tpl->newblock("erroresManejables1");
-                            $_mensajeTxt = "* Se encontraron los errores listados en la tabla siguiente ...<br>" .
+                            $_mensajeTxt = "* Se encontraron los errores listados en la tabla siguiente.<br>" .
                                 "* Para poder cargar las notas, es necesario volver a enviarlo con los errores corregidos";
                             $tpl->assign("mensaje2", $_mensajeTxt);
                             $tpl->assign("aTipoMensaje",'danger');
-                            $tpl->assign("aEncabezadoMensaje",'ARCHIVO NO CARGADO');
+                            $tpl->assign("aEncabezadoMensaje",'ARCHIVO CARGADO CON PROBLEMAS');
+                            $tpl->assign("notaMax",$txtPonderacionActividad);
                             for ($i = 0; $i < $_erroresManejables; $i++) {
                                 $tpl->newblock("errorManejable1");
                                 $tpl->assign("elCarnet1", $_listaErrores[$i][0]);
@@ -675,13 +712,10 @@ switch ($opcion) {
                         }
 
                     } else {
-// 					 $bd->query("commit");
 
                         $bd->query($gsql_na_maa->commit());
-
-//					    $bd->query("end");
-
                         $bd->query($gsql_na_maa->end());
+                        // fin transaccion.
 
                         $tpl->newblock("mensaje");
                         $_mensajeTxt = "* El archivo fué procesado completamente sin encontrar errores en su contenido<br>" .
@@ -690,23 +724,15 @@ switch ($opcion) {
                         $tpl->assign("mensaje", $_mensajeTxt);
                         $tpl->assign("aTipoMensaje",'success');
                         $tpl->assign("aEncabezadoMensaje",'IMPORTANTE');
-                        //header('Location: creaactividad.php?opcion=9');
                     }
                 } else {
-//					  $bd->query("rollback");
-
-
                     $bd->query($gsql_na_maa->rollback());
-
-//					  $bd->query("end");
-
                     $bd->query($gsql_na_maa->end());
-
+                    //fin de la transaccion
                 }
             }// del if mover archivo. . .
             else {
-                bloqueCargaNotas($txtCurso, $txtSeccion, $txtPeriodo, $txtAnio, $txtTipoActividad, $txtIdActividad,
-                    $txtEsSuperActividad, $tpl, $bd, $txtCarrera);
+                bloqueCargaNotas($txtIdActividad,$txtCurso, $txtCarrera, $txtAnio, $txtPeriodo, $txtSeccion, $txtTipoActividad, 0,$tpl,$bd);
                 $tpl->newblock("mensaje");
 
                 $_mensajeTxt = "* Imposible guardar el archivo temporalmente para procesarlo ...<br>" .

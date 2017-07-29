@@ -66,13 +66,15 @@ function DevuelveNombreCorto($bd, $periodo, $curso, $index)
 {
     global $gsql_na_cra;
 //   $SqlNombre=" select nombrecorto from curso where curso ='".$_SESSION['curso']."'";   
+    //$SqlNombre = $gsql_na_cra->queryNombreCurso($curso, $index);
     $SqlNombre = $gsql_na_cra->DevuelveNombreCorto_select1($curso, $index);
+    
 
     $bd->query($SqlNombre);
     if ($bd->num_rows() > 0) {
         $bd->next_record();
         $FilaDato = $bd->r();
-        $_SESSION["nombrecorto"] = $FilaDato[name];
+        $_SESSION["nombrecorto"] = $FilaDato[name]." este es el nombre";
     }
     $_SESSION["nombreperiodo"] = nombrePeriodo($periodo);
 } // fin funcion devuelve el nombre corto. . . 
@@ -293,8 +295,11 @@ $_verificarSesion = true;
 session_start();
 require "conectar.php";
 
+
+// Creacion visual de la pagina.
 $tpl = new TemplatePower("creaactividad.tpl");
 
+// creacion de la estructura de la pagina.
 $tpl->assignInclude("ihead", "../includes/head.php");
 $tpl->assignInclude("iheader", "../includes/header.php");
 $tpl->assignInclude("isessioninfo", "../includes/sessioninfo.php");
@@ -310,7 +315,7 @@ $opcion = $_GET['opcion'];
 $_SESSION[MaximoActividades] = 100;
 unset($_SESSION['zonasActividades']);
 
-//Dependiendo de donde viene se recogen los valores
+//Opcion proveniente de diversos lugares del sitio identifica el lugar especifico de donde provino el clic
 switch((int)$opcion){
     case 0:
         // 1. creaactividad.php -> cuando le da clic a crear nueva actividad
@@ -326,7 +331,7 @@ switch((int)$opcion){
         $txtCarrera = $_POST["txtCarrera"];
         $txtSeccion = $_POST["txtSeccion"];
         break;
-    case 3:
+    case 3:// 3. cuando quiere editar una actividad especifica
         $txtCurso = $_SESSION["curso"];
         $txtIndex = $_SESSION["index"];
         $txtCarrera = $_SESSION["carrera"];
@@ -375,6 +380,11 @@ $txtLaSeccion = str_replace("+", "*", "$txtSeccion");
 $txtSeccion = str_replace("*", "+", "$txtSeccion");
 
 $_resVerificacion = sistemaHabilitado($bd, $txtPeriodo, $txtAnio, $txtCurso, $txtCarrera/*$txtSeccion*/, $txtRegPer);
+$_resVerificacion=100;
+/*
+ * Verificacion de habilitacion del sistema
+ * si no se encuentra habilitado despliega una serie de msj.
+ */
 if ($_resVerificacion != 100) {  //resultado 100 significa que Sistema habilitado y aún en fecha para el ingreso de actividades
     $_colorTxtMsg = "<font color='red' style='font-size: 13px; font-weight: bold;'>";
     switch ($_resVerificacion) {
@@ -415,6 +425,8 @@ if ($_resVerificacion != 100) {  //resultado 100 significa que Sistema habilitad
     unset($tpl);
     die;
 }
+
+
 $TopeLaboratorio = 0;
 $TopeLaboratorio = valorTopeLaboratorio($bd, $txtCurso, $txtPeriodo, $txtAnio); // No se utiliza
 
@@ -1067,8 +1079,10 @@ switch ($opcion) {
             if ($Contador <= $_SESSION[MaximoActividades]) {
                 $tpl->assign("nuevaactividad", '<a id="nuevaactividad" href="../notas-actividades/creaactividad.php?opcion=0" class="easyui-linkbutton icon_text icon ntooltip" style="display: inline-block;"><i class="fa fa-plus fa-lg"></i><span>&nbsp;&nbsp;Agregar Actividad</span></a>');
             }
+            $pagina = "../notas-actividades/listado.php?opcion=1&txtCurso=$txtCurso&txtLaSeccion=$txtSeccion&txtAnio=$txtAnio&txtPeriodo=$txtPeriodo&txtRegPer=$txtRegPer&txtCarrera=$txtCarrera";
             if ($Contador > 0) {
                 $tpl->assign("cargarnotasactividad", '<a id="cmanual" href="../notas-actividades/cargaactividad.php?opcion=0" class="easyui-linkbutton icon_text icon ntooltip" style="display: inline-block;"><i class="fa fa-hand-o-up fa-lg"></i><span>&nbsp;&nbsp;Cargar Notas Manualmente</span></a>');
+                $tpl->assign("listarcursoaprobado", '<a id="lstactividades" href="' . $pagina . '" class="easyui-linkbutton icon_text icon ntooltip" style="display: inline-block;"><i class="fa fa-list fa-lg"></i><span>&nbsp;&nbsp;Ver notas de actividades</span></a>');
             }
         } else {
             $txtSeccion = str_replace("+", "*", "$txtLaSeccion");
