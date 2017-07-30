@@ -159,6 +159,61 @@ define("VALOR_CURSO_CUATRO_HRS",165);
 define("VALOR_LABORATORIO",80);
 define("VALOR_CURSO_ESPECIAL",40);
 
+
+// datos de Tipos de actividades que existen en la Base de Datos Enero 2017 Erick Suy
+define("PRIMER_PARCIAL", 1);
+define("SEGUNDO_PARCIAL", 2);
+define("EXAMEN_CORTO", 9);
+define("TAREA", 18);
+define("PRACTICAS_INTEGRADAS", 13);
+define("ACTIVIDAD_LAB",30);
+define("TRABAJO_ESPECIAL", 12);
+
+//Tipo de Actividades que existen el la BD Enero 2017, estas definiciones se utilizan prinicpalmente para
+//filtrar y crear una vista con las actividades estandares detalladas. archivo crearActividad.php -- > "switch case 2"
+define("PARCIALES","1,2,3,5,123,124,125,126");
+define("EXAMENES_CORTOS","9,60,61,96,97");
+define("TAREAS","18,83,93,121");
+define("PRAC_INTEGRADAS","13,68,69");
+define("PROYECTO_TRABAJO","11,12,35,80,81,95,30");
+
+
+
+//definicion de zona maxima para cursos modulares e introductorios Erick Suy 2017
+define("ZONA_MODULAR",80);
+define("ZONA_INTROBASICVACAS",70);
+define("PARCIAL_MODULAR",20);
+define("PARCIAL_INTROBASICVACAS",15);
+
+//definicion de zona minima para cursos Erick suy 2017
+/*      Nivel Introductorio:        Treinta y un (31) puntos
+        Nivel Básico:        Treinta y un (31) puntos
+        Nivel Modular:        Cincuenta (50) puntos
+        Escuela de Vacaciones:         Cuarenta (40) puntos*/
+define("ZONAMIN_INTROBASIC",31);
+define("ZONAMIN_MODULAR",50);
+define("ZONAMIN_VACAS",40);
+
+//definicion atributos caso especial EPS
+define("id_EPS",1); //el id del curso
+define("ZONA_EPS",100); // Es la zona maxima del curso, no tiene zona y finales unicamente las actividades lo suman
+define("ZONAMIN_EPS",61); // Zona para aprobar el curso.
+
+// datos Tipo de actividdes que existen en la base de datos para gestionar EPS
+define("ORGANIZACION_SUPERVISION",39);
+define("SERVICIO",94);
+define("INVESTIGACION",31);
+define("DOCENCIA_EXTENSION",128); // Nuevo ingreso a bd
+
+// Punteo actividad EPS
+define("ORG", 25);
+define("SERV", 25);
+define("DOCE", 25);
+define("INV", 10);
+define("SUPER", 15);
+
+
+
 //define("URL_CONEXION_WS",'http://testsiif.usac.edu.gt/WSGeneracionOrdenPago/WSGeneracionOrdenPagoSoapHttpPort?wsdl');//LINK DE PRUEBAS version 1
 //define("URL_CONEXION_WS",'http://testsiif.usac.edu.gt/WSGeneracionOrdenPagoV2/WSGeneracionOrdenPagoV2SoapHttpPort?wsdl');//version 2
 //define("URL_CONEXION_WS",'http://localhost/libraries/biblio/librerias_externas/nusoap/WS/servidor_nusoap.php');

@@ -1,15 +1,236 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: sonyvaio
- * Date: 22/11/2014
- * Time: 03:51 AM
- */
+
 include_once("General_SQL.php");
 
 Class creaactividad_SQL extends General_SQL
 {
 
+    /************************************************************ FUNCIONES */
+    /*
+     * @detalleBD BD_portal2.html
+     * @diagramaBD BD_portal2.pdf
+     * @cambios
+     * @functionOrigen  queryNombreCurso
+     * @ref #1
+     * @línea   #50
+     */
+    /*
+     * reemplaza a DevuelveNombreCorto_select1
+     */
+    function queryNombreCurso($_SESSIONcurso, $index)
+    {
+       return " select name from tbcourse where idcourse ='" . $_SESSIONcurso . "' and index=" . $index . ";";      
+    }
+    
+    /*
+     */
+    function queryTipoActividad() /*retonra las actividades que esten registradas exceptuando Finales*/
+    {
+        return " select * from ing_tipoactividad where activo=1 order by nombre; ";
+    }
+    
+    
+    
+    /*
+     * retorna count de actividades para un curso,carrera, periodo, año especifico
+     */
+    function queryNumeroActividades($Curso,$Periodo, $Carrera, $Anio){
+        return " select count(*) as conteo from tbactividad_curso where curso=$Curso and periodo='".$Periodo."' and anio=$Anio and carrera=$Carrera; ";
+    }
+    
+    function queryCalendarioActividades($Curso,$Periodo, $Carrera, $Anio){
+        return "select * from ing_calendarioactividades where curso=$Curso and carrera=$Carrera and anio=$Anio and periodo='".$Periodo."';";
+    }
+    
+    function queryInsertActividad($nombre,$tipo,$fechaEntrega,$ponderacion,$docencia,$activo,$curso,$anio,$periodo,$carrera,$inicioPeriodo){
+        return "INSERT INTO tbactividad_curso (nombre,
+            tipo,
+            fechaentrega,
+            ponderacion,
+            scheduletype,
+            activo,
+            curso,
+            anio,
+            periodo,
+            carrera,
+            inicioperiodo) VALUES (
+            '$nombre',$tipo, '$fechaEntrega',$ponderacion,$docencia,$activo,$curso,$anio,'$periodo',$carrera,'$inicioPeriodo');";
+    }
+    
+    
+    function queryDeleteActividad($idactividad){
+        return "DELETE FROM tbactividad_curso WHERE idactividad=$idactividad;";
+    }
+    function queryEsSuperActividad($idactividad){
+        /*superactividad se utiliza denotar que actividades se pueden borrar y que actividades no*/
+        return "select * from ing_tipoactividad where superactividad=1 and idtipoactividad=$idactividad;";
+    }
+    function queryUpdateActividad($idactividad,$nombre,$tipo,$fecha,$ponderacion,$docencia){
+        return "UPDATE tbactividad_curso SET nombre = '$nombre', tipo=$tipo, "
+        . "fechaentrega='$fecha', ponderacion=$ponderacion, scheduletype=$docencia "
+        . "WHERE idactividad = $idactividad;";
+    }
+    
+    function queryGetActividad($idactividad){
+        return "select * from tbactividad_curso WHERE idactividad=$idactividad;";
+    }
+    
+    function queryGetParciales($curso,$carrera,$periodo,$anio){
+        //utilizado pra comprobar que parciales han ingresado, antes de ingresar uno de reposicion.
+        return "select * from tbactividad_curso where "
+        . "curso=$curso "
+        . "and carrera=$carrera "
+        . "and periodo='$periodo'"
+        . "and anio=$anio "
+        . "and (tipo=1 or tipo=2 or tipo=5);";
+    }
+    
+    function queryInsertRegPersonal_Actividad($actividad,$responsable,$regpersonal){
+        // El flujo es el siguiente:
+        //      una actividad tiene muchos registros de personal pero solo un responsable.
+        // la modelacion interna de este proceso se lleva de la siguiente forma:
+            // regpersonal = {reg,reg2,reg(n)} donde reg son los registros de personal para este curso
+            // responsable = reg; es el catedratico que creo la actividad.
+            return "INSERT INTO tbregpersonal_actividad (actividad,responsable,regpersonal) "
+        . "VALUES ($actividad,$responsable,'$regpersonal');";
+    }
+    
+    function queryInsertFechaAprobacion_Actividad($curso, $seccion, $periodo, $anio, $regPersonal){
+        return "INSERT INTO ing_fechaaprobacionactividad (curso,seccion,periodo,anio,regper)"
+        . "VALUES ($curso,$seccion,$periodo,$anio,$regPersonal)";
+        
+    }
+    
+    function queryExisteFechaAprobacion_Actividad($curso,$carrera,$periodo,$anio){
+        return "select count(*) as cantidad from ing_fechaaprobacionactividad where "
+        . "curso='$curso' and periodo='$periodo' and anio=$anio and seccion='$carrera';";
+    }
+    
+    function queryValidarActividad($Anio,$Periodo,$Curso,$Carrera,$Fecha,$Crearla,$ZonaMaxima,$Ponderacion,$tipoActividad,$esActualizacion,$notaAnterior){
+        /*la zona maxima proviene de 70|80 para nivel introductorio basico o modulares respectiviamtne
+          crearla = true|false -- el usuario decide crear la actividad aunque existiese una activdad en la misma fecha
+         *esActualizacion = true|false -- para verifcacion si fuese una edicion de la actividad         
+          notaAnterior = es un numero de la ponderacion anterior de la actividad a modificar esto solo si se decide modificar la actividad.     */
+        $retorno = "select * from validarActividad($Anio,'$Periodo'::bpchar,$Curso,$Carrera,"
+                . "'$Fecha',$Crearla,$ZonaMaxima,$Ponderacion,$tipoActividad,$esActualizacion,$notaAnterior);";
+        
+        return $retorno;
+              
+    }
+    
+    function getUltimoId($ConnBaseDatos,$tableSeq){
+        $queryLast = "select last_value from $tableSeq;";
+        $ConnBaseDatos->query($queryLast);
+        $resultadoQuery=(($ConnBaseDatos->next_record()) != null)? $ConnBaseDatos->r():null;
+        if($resultadoQuery!=null)
+            return $resultadoQuery[last_value];
+        return -1;
+    }
+    
+    function queryNotasActividad($idActividad,$Curso,$Periodo, $Carrera, $Anio){
+        return " insert into tbnotas_actividad(actividad,carnet,notaobtenida,estado)
+             select '$idActividad',idstudent,0,1
+             from tbassignation  a, tbassignationdetail ad
+             where a.idassignation = ad.idassignation
+	           AND ad.idcourse='$Curso'
+              AND a.idcareer='$Carrera'
+              AND ad.idschoolyear='$Periodo'
+              AND ad.year='$Anio'
+            ORDER BY a.idstudent ";
+    }
+    
+    function queryInsertBitacoraInicial($regPersonal,$group, $idActividad,$Curso,$Periodo, $Carrera, $Anio){
+        //la ponderacion = 0 porque es la inicial.
+        return "insert into tbbitacora_actividades (autor, idgroup,carnet,actividad,ponderacion) "
+        . "select $regPersonal,$group,idstudent,$idActividad,0
+             from tbassignation  a, tbassignationdetail ad
+             where a.idassignation = ad.idassignation
+	           AND ad.idcourse='$Curso'
+              AND a.idcareer='$Carrera'
+              AND ad.idschoolyear='$Periodo'
+              AND ad.year='$Anio'
+            ORDER BY a.idstudent ;";
+    }
+    
+    function queryGetActividades($Curso,$Periodo, $Carrera, $Anio,$doncencia,$TipoActividadArray,$all){
+        
+        //TipoActividadArray : para poder obetener un filtro especifico de actividades por tipo
+        //all = para poder comparar por medio de all(array[]), que incluye cuando las actividades no coinciden con lo propuesto tip
+        //docencia = lab o practica (1,2 respectivamente).
+        
+        
+        
+        if($TipoActividadArray==null && $doncencia==null)
+            return "select * from tbactividad_curso where curso=$Curso and anio=$Anio and periodo='".$Periodo."' and carrera=$Carrera order by fechaentrega;";
+        else if($TipoActividadArray!=null && $doncencia==null)
+            return "select * from tbactividad_curso where curso=$Curso and anio=$Anio and periodo='".$Periodo."' and carrera=$Carrera and tipo= ANY(array[$TipoActividadArray]) order by fechaentrega;";
+        else if($doncencia!=null && $TipoActividadArray!=null && $all!=null)
+            return "select * from tbactividad_curso where scheduletype=$doncencia and curso=$Curso and anio=$Anio and periodo='".$Periodo."' and carrera=$Carrera and tipo!= ALL(array[$TipoActividadArray]) order by fechaentrega;";
+        else if($doncencia!=null && $TipoActividadArray!=null)
+            return "select * from tbactividad_curso where scheduletype=$doncencia and curso=$Curso and anio=$Anio and periodo='".$Periodo."' and carrera=$Carrera and tipo= ANY(array[$TipoActividadArray]) order by fechaentrega;";
+        else
+            return "select * from tbactividad_curso where scheduletype=$doncencia and curso=$Curso and anio=$Anio and periodo='".$Periodo."' and carrera=$Carrera order by fechaentrega;";
+    }
+    
+    function queryGetPromedioEntregados($idActividad){
+        return "select count(*) as entregados ,trunc(avg(notaobtenida), 2) as promedio
+            from tbnotas_actividad where actividad=$idActividad and notaobtenida>=0 
+            union 
+            select count(*),null from tbnotas_actividad where actividad=$idActividad;";
+    }
+    
+    function queryAlumnos($Curso,$Periodo, $Carrera, $Anio){
+        return "select idstudent
+             from tbassignation  a, tbassignationdetail ad
+             where a.idassignation = ad.idassignation
+	           AND ad.idcourse='$Curso'
+              AND a.idcareer='$Carrera'
+              AND ad.idschoolyear='$Periodo'
+              AND ad.year='$Anio'
+            ORDER BY a.idstudent ";
+    }
+    
+    function queryHorarioLab($Curso,$Periodo, $Carrera, $Anio,$esModular){
+        if($esModular){
+            return "SELECT 
+	                CASE
+	                    WHEN (count(x.*) > 0) THEN 1
+	                ELSE 0
+	            END as laboratorio
+	            FROM public.tbmodule_scheduledetail x WHERE idcourse=$Curso and year=$Anio 
+	            and idschoolyear=$Periodo and idscheduletype=2 and idcareer=$Carrera;";
+        }
+        return "SELECT 
+                    CASE
+                        WHEN (count(x.*) > 0) THEN 1
+                        ELSE 0
+                    END as laboratorio
+                    FROM public.tbscheduledetail x WHERE idcourse=$Curso and year=$Anio 
+                        and idschoolyear=$Periodo and idscheduletype=2 and idcareer=$Carrera";
+    }
+    //--------------------------
+   
+    
+     function queryGetNotas($Curso,$Periodo, $Carrera, $Anio){
+        return "select Nota.carnet,Estudiante.name,Estudiante.surname,Estudiante.dpi,Nota.notaobtenida, Actividad.nombre, Actividad.idactividad FROM tbactividad_curso AS Actividad,tbnotas_actividad as Nota, tbstudent as Estudiante
+	    WHERE Actividad.idactividad=Nota.actividad
+	    AND Estudiante.idstudent=Nota.carnet	
+            AND Actividad.curso=$Curso
+            AND carrera=$Carrera
+            AND Actividad.periodo='$Periodo'
+            AND Actividad.anio=$Anio
+            ORDER BY Nota.carnet, Actividad.fechaentrega;";
+    }
+    
+    function queryDistinctNombreActividad($Curso,$Periodo, $Carrera, $Anio){ //Agregar curso,periodo,carrera,anio
+        return "select  distinct(nombre),ponderacion,idactividad,fechaentrega from tbactividad_curso where
+            curso=$Curso
+            and carrera=$Carrera
+            and periodo='$Periodo'
+            AND anio=$Anio ORDER BY fechaentrega;";
+    }
+
+    
     /**
      * @detalleBD BD_portal2.html
      * @diagramaBD BD_portal2.pdf
@@ -20,7 +241,7 @@ Class creaactividad_SQL extends General_SQL
      */
     function DevuelveNombreCorto_select1($_SESSIONcurso, $index)
     {
-        return " select name from tbcourse where idcourse ='" . $_SESSIONcurso . "' and index=" . $index . ";";
+        return " select idcourse from tbcourse where idcourse ='" . $_SESSIONcurso . "' and index=" . $index . ";";
     }
 
     /**

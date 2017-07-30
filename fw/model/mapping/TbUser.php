@@ -45,7 +45,6 @@ class TbUser
     private $alternatePhone;
     private $alternateCelular;
     private $titlePrefix;
-    private $FirstName;
 
     public function TbUser($mail, $password, $id, $name, $surname, $address, $gender, $idtypeschool, $birthdate, $phone, $celular, $carnet, $unity, $extention, $career, $state, $idtypetrainer, $group, $site, $session)
     {
@@ -187,7 +186,6 @@ class TbUser
     public function setName(&$name)
     {
         $this->name = $name;
-        $this->FirstName = $name;
     }
 
     public function &getSurName()
@@ -667,11 +665,6 @@ class TbUser
     public function &getRatingTypeName()
     {
         return $this->ratingTypeName;
-    }
-    
-    public function &getFirstName()
-    {
-        return $this->FirstName;
     }
 }
 

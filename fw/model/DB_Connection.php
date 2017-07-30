@@ -20,7 +20,7 @@ class DB_Connection
     var $Port; // puerto por el cual se conecta a la BD
     var $User; // se deja en blanco y se parametriza en las clases
     var $Password; // se deja en blanco y se parametriza en las clases
-
+  
     var $Link_ID = 0;
     var $Query_ID = 0;
     var $Record = array();
