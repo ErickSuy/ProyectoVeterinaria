@@ -14,8 +14,8 @@
 
     $url_origen = "192.168.0.105";
 
-    $path_portal = "/var/www/index.php";
-    $path_biblio = "/var/www/libraries/index.php";
+    $path_portal = "/var/www/ProyectoVeterinaria/index.php";
+    $path_biblio = "/var/www/ProyectoVeterinaria/libraries/index.php";
 
     $dir_biblio = dirname($path_biblio) . "/";
     $dir_portal = dirname($path_portal) . "/";

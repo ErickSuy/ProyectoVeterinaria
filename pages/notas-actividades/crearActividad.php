@@ -10,7 +10,7 @@ include_once("$dir_biblio/biblio/SysConstant.php");
 include_once("$dir_portal/fw/model/DB_Connection.php");
 include_once("$dir_portal/fw/model/mapping/TbUser.php");
 include_once("$dir_portal/fw/view/lib/TemplatePower.php");
-include_once("$dir_portal/fw/model/sql/crearActividad_SQL.php");
+include_once("$dir_portal/fw/model/sql/creaactividad_SQL.php");
 include_once("$dir_portal/fw/view/validator/ManejoString.php");
 
 require "conectar.php"; /* archivo que maneja la conexion y la variable BD*/
