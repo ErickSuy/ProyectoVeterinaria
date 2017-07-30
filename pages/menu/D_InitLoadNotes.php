@@ -95,8 +95,10 @@ $tpl->prepare();
 
 if($objuser->getGroup()==GRUPO_CONTROL_ACADEMICO) {
     $tpl->assign("aPost", 'COAC_ActCourseList.php');
+    $tpl ->assign("print",'COAC_ActCourseList.php');//BORRAR
 } else {
     $tpl->assign("aPost", 'D_CourseList.php');
+    $tpl ->assign("print",'D_CourseList.php');//BORRAR
 }
 
 $anioInicio = 2014;

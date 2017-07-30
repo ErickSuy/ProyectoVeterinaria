@@ -13,6 +13,7 @@ include_once("$dir_portal/fw/model/mapping/TbUser.php");
 include_once("$dir_portal/fw/view/lib/TemplatePower.php");
 include_once("$dir_portal/fw/view/validator/ManejoString.php");
 include_once("$dir_portal/fw/controller/manager/D_LoadNotesScheduleManager.php");
+include_once("$dir_portal/pages/notas-actividades/conectar.php"); // referencia para la creacion de funciones
 
 session_start();
 
@@ -52,13 +53,19 @@ $anio = $_SESSION["sAnio"];
 
 $base = NEW DB_Connection();
 $base->connect();
-
 $listado = new D_LoadNotesScheduleManager();
 $numero_filas = $listado->DarListadoDeCursos($periodo, $anio, $objuser->getId());
 
+function verificar_sistemaHabilitado($bd, $txtPeriodo, $txtAnio, $txtCurso, $txtCarrer, $txtRegPer){
+    /*Este metodo se encargara de verificar si el sistema es apto para cargar
+      aactividades o presentarle al usuario la carga de finales.     */
+    $_resVerificacion = sistemaHabilitado($bd, $txtPeriodo, $txtAnio, $txtCurso, $txtCarrera/*$txtSeccion*/, $txtRegPer);
+    //$_resVerificacion=100;
+    
+}
+
 //  Este vector contiene los recuperados, luego de asignarles los enlaces con la acciones que van a poder realizarse
 $vListadoCursos = array();
-
 /** INICIO: INGRESO DE NOTAS DE FINALES **/
 if ($numero_filas > 0) {
     for ($i = 1; $i <= $numero_filas; $i++) {
@@ -120,8 +127,13 @@ if ($numero_filas > 0) {
             //echo $parametros.'<br>';
         }
         array_push($vListadoCursos, $vRegistroCurso);
+        
+        
         unset($vRegistroCurso);
     }
+   
+    
+    
 }
 //die;
 /** FIN: INGRESO DE NOTAS DE FINALES **/
@@ -129,7 +141,13 @@ if ($numero_filas > 0) {
 /** INICIO: INGRESO DE NOTAS DE ACTIVIDADES **/
 $_SESSION['regper'] = $objuser->getId();
 $cursos_actividades = $listado->DarListadoDeCursos1($periodo, $anio, $objuser->getId());
+//print_r($cursos_actividades);//Test
+// una variable de sesion para saber que grupo pertenece el usuario. Erick Suy'17
+$_SESSION['group'] =$objuser->getGroup();
+
 $numero_filas1 = count($cursos_actividades);
+$parametros;
+
 
 if ($numero_filas1 > 0) {
     for ($i = 0; $i < $numero_filas1; $i++) {
@@ -142,8 +160,7 @@ if ($numero_filas1 > 0) {
         $tipo = $cursos_actividades[$i]['type'];
         $catedratico = $objuser->getId();
 
-        $otros_docentes = $listado->DarListadoDocentesCurso($codigo,$index,$carrera,$anio,$periodo,$objuser->getId(),$tipo);
-
+        $otros_docentes = $listado->DarListadoDocentesCurso($codigo,$index,$carrera,$anio,$periodo,$catedratico,$tipo);
         $docentes = '';
 
         if(count($otros_docentes)>0) {
@@ -176,21 +193,25 @@ if ($numero_filas1 > 0) {
             if ($signo == '+') $seccion[1] = '*';
         }
 
+         
         //$parametros = 'opcion=9&curso=' . $codigo . '&seccion=' . $seccion . '&index=' . $index;
         $parametros = 'opcion=9&curso=' . $codigo . '&carrera=' . $carrera . '&index=' . $index . '&docentes=' . $docentes;
-       // echo $parametros.'<br>';
+       
+        ;
         for ($j = 0; $j< count($vListadoCursos); $j++) {
             if ($vListadoCursos[$j]['cur'] == $codigo AND $vListadoCursos[$j]['idx'] == $index AND $vListadoCursos[$j]['car'] == $carrera) {
                 $vListadoCursos[$j]['acc'][$cursos_actividades[$i]['idscheduletype']] = sprintf('../notas-actividades/creaactividad.php?%s', $parametros);
                 break;
             }
         }
+        //print_r($vListadoCursos);
     }
 }
 /** FIN: INGRESO DE NOTAS DE ACTIVIDADES **/
 
 /** Crear la tabla de cursos recuperados **/
 if (count($vListadoCursos)) {
+  
     $tCursos = '';
     $tCursos = "<table class='reporte-cursos' align='center' width='100%' cellspacing='0' cellpadding='0'>";
     $tCursos .=
@@ -201,7 +222,8 @@ if (count($vListadoCursos)) {
 
     for ($i = 0; $i < count($vListadoCursos); $i++) {
         $lAcciones = '';
-        $vAcciones = $vListadoCursos[$i]['acc'];
+        $vAcciones = $vListadoCursos[$i]['acc'];// array de acciones que contiene URL de direccionamiento
+        /*ejemplo [acc] => Array ( [0] => D_CourseInformationReview.php?curso=311&carrera=2&index=1 )*/
 
         if(count($vAcciones)) {
             $lAcciones .= '<a href="#" class="easyui-menubutton" data-options="menu:\'#mm' . $i . '\'"><i class="fa fa-pencil"></i></a>';
@@ -211,7 +233,12 @@ if (count($vListadoCursos)) {
                 switch ($key) {
                     case 1 :
                         $lAcciones .= '<div iconCls="fa fa-tasks" title="Carga de notas de las actividades correspondientes a la clase magistral" onclick="window.location.href = \''. $value .'\'"">Zonas del curso</div>';
-                        //echo $value . '<br>';
+                        $newValue = str_replace("creaactividad", "crearActividad", $value);
+                        $newValue = str_replace("opcion=9", "opcion=1", $newValue);
+                        $value=$newValue;
+                        $lAcciones .= '<div iconCls="fa fa-tasks" title='.$value.' onclick="window.location.href = \''. $value .'\'"">Zonas de curso test</div>';
+                        
+                       //echo $value . '<br>';
                         break;
                     case 2 :
                         $lAcciones .= '<div iconCls="fa fa-flask" title="Carga de notas de las actividades correspondientes al laboratorio" onclick="window.location.href = \''. $value .'\'""> Laboratorio</div>';
@@ -220,6 +247,7 @@ if (count($vListadoCursos)) {
                         $lAcciones .= '<div iconCls="fa fa-check" title="Carga de notas correspondientes al examen final" onclick="window.location.href = \''. $value .'\'">Nota de Finales</div>';
                 }
             }
+            
             $lAcciones .= '</div>';
         }
 
