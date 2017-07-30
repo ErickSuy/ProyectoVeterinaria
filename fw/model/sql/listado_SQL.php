@@ -35,6 +35,78 @@ Class listado_SQL extends General_SQL {
      * @ref #2
      * @línea   #61
      */
+    
+    
+    
+    
+    /*funciones para generar el listado Erick Suy 2017*/
+    function querygetZonas($Curso,$Carrera,$Periodo,$Anio){
+        /*retorna una tabla con la siguiente estructura
+         * rcarnet numeric, rname text, rdpi character varying, 
+         * rnotaobtenida numeric, rponderacion numeric, rnombre character varying, 
+         * ridactividad integer, rtipo integer
+         * 
+         * cada tupla es una actividad
+         */
+        return "select * from getzonasfinales ($Anio,'$Periodo',$Curso,$Carrera );";
+    }
+    
+    function  queryGetAprobacionCurso($Curso,$Carrera,$Periodo,$Anio){
+        return "select  
+	case when fecha isnull then 0
+			else 1
+	end as aprobado
+        from ing_fechaaprobacionactividad 
+        where curso='$Curso' and "
+                . "seccion='$Carrera' and "
+                . "anio='$Anio' and "
+                . "periodo='$Periodo'";
+        
+    }
+    
+    function queryGetIdAssignation($Curso,$Carrera,$Periodo,$Anio,$idStudent){
+        return "select a.idassignation
+            from tbassignation  a, tbassignationdetail ad
+            where a.idassignation = ad.idassignation
+            AND ad.idcourse='$Curso'
+            AND a.idcareer='$Carrera'
+            AND ad.idschoolyear='$Periodo'
+            AND ad.year='$Anio'
+            and a.idstudent='$idStudent'";
+    }
+            
+    function queryAprobarCurso($Zona,$Carnet,$Curso, $Carrera, $Periodo,$Anio,$regPersonal){
+    
+        return "select * from aprobarNotas($Zona::numeric,"
+                . "$Carnet::numeric,"
+                . "$regPersonal::bpchar,"
+                . "$Curso::int2,"
+                . "$Anio::int2,"
+                . "$Periodo::int2,"
+                . "$Carrera::int2);";
+    }
+            
+     function queryNombreActividad($Curso,$Periodo, $Carrera, $Anio){ //Agregar curso,periodo,carrera,anio
+        return "select  nombre,ponderacion,idactividad,fechaentrega from tbactividad_curso where
+            curso=$Curso
+            and carrera=$Carrera
+            and periodo='$Periodo'
+            AND anio=$Anio ORDER BY fechaentrega;";
+    }
+    
+    function esCursoModular($txtIndex, $txtCurso, $txtCarrera)
+    {
+        /**
+         *  -- ORIGINAL --
+         * select distinct(idscheduletype) from tbscheduledetail where idcourse='".$txtCurso."' and index='".$txtIndex."' and section='".$txtSeccion."'
+         * and idschoolyear='".$txtPeriodo."' and year='".$txtAnio."' and idscheduletype=1
+         */
+
+        return sprintf("select case when f_check_modulecourse='t' then 1 else 0 end as resultado from f_check_modulecourse(%d,%d,%d);", $txtIndex, $txtCurso, $txtCarrera);
+    }
+    /*fin de funciones para generar listado Erick Suy 2017*/
+    
+    
     function _select_2($txtAnio){
         return "endyear>='" . $txtAnio."'";
     }
