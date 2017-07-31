@@ -620,7 +620,7 @@ switch ($opcion) {
                                     $_cambiaNotaExistente = cambiarNotasExistentes($bd,$_notasExistentes, $carnet, $nota, $_SESSION['regper'], $txtIdActividad, $_erroresManejables1, $_listaErrores1);
                                     if ($_cambiaNotaExistente === true) {
                                         $reg = $_SESSION['regper'];
-                                        $goup = $_SESSION['group'];
+                                        $group = $_SESSION['group'];
                                         $query = "select * from actualizarNotasActividad($reg,$group,'$txtIdActividad','$nota',$carnet);";
                                         $bd->query($query);
                                         $resultado = "";
