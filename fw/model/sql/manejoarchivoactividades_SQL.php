@@ -20,6 +20,7 @@ Class manejoarchivoactividades_SQL extends General_SQL {
      * @ref #1
      * @línea   #71
      */
+    // posible a borrar
     function bloqueCargaNotas_select1($txtPeriodo,$txtAnio,$txtCurso,$txtSeccion,$_SESSIONregper,$txtTipoActividad,$txtIdActividad){
         return "select trim(t.nombre) as nombre_t,trim(a.nombre) as nombre_a,a.ponderacion" .
         " from ing_tipoactividad t,ing_actividad a where a.tipoactividad=t.idtipoactividad" .
@@ -27,7 +28,21 @@ Class manejoarchivoactividades_SQL extends General_SQL {
         "' and a.seccion='" . $txtSeccion . "' and a.regper @> array[" . $_SESSIONregper .
         "] and t.idtipoactividad=" . $txtTipoActividad . " and a.idactividad=" . $txtIdActividad;
     }
-
+    function queryGetInfoActividad($idActividad){
+        return "select trim(a.nombre) as nombre_a,a.ponderacion,trim(t.nombre) as nombre_t 
+            from tbactividad_curso as a, ing_tipoactividad as t 
+            where t.idtipoactividad=a.tipo
+            and a.idactividad=$idActividad;";
+        
+    }
+    function queryResponsablActividad($IdActividad, $regPersonal, $carnet){
+        return "select actividades.notaobtenida, responsables.responsable 
+            from tbnotas_actividad as actividades,tbregpersonal_actividad as responsables
+            where responsables.actividad=actividades.actividad 
+            and actividades.actividad=$IdActividad 
+            and responsable=$regPersonal 
+            and carnet=$carnet;";
+    }
     /**
      * @detalleBD BD_portal2.html
      * @diagramaBD BD_portal2.pdf
@@ -36,13 +51,33 @@ Class manejoarchivoactividades_SQL extends General_SQL {
      * @ref #2
      * @línea   #103
      */
+    
+    /*version a borrar*/
     function notasYaExistentes_select1($txtTipoActividad,$txtAnio,$txtPeriodo,$txtCurso){
         return "select na.curso,na.seccion,na.carnet,na.actividades[a.posicion] as nota,na.seccionactividad[a.posicion] as secactividad" .
         " from ing_actividad a, ing_notasactividad na" .
         " where a.anio=na.anio and a.periodo=na.periodo and a.curso=na.curso and a.seccion=na.seccion" .
-        " and a.tipoactividad in (select idtipoactividad from ing_tipoactividad where activo=1 and superactividad=1) and a.activo=1" .
+        " and a.tipoactividad in (select idtipoactividad from ing_tipoactividad where activo=1) and a.activo=1" .
         " and a.tipoactividad=" . $txtTipoActividad . " and na.anio=" . $txtAnio . " and na.periodo='" . $txtPeriodo .
         "' and na.curso='" . $txtCurso . "' and na.actividades[a.posicion]>0 order by na.carnet";
+    }
+    
+    function queryNotaExistentes($IdActividad,$regPersonal) {
+        return "select actividades.carnet,actividades.notaobtenida, responsables.responsable "
+        . "from tbnotas_actividad as actividades,tbregpersonal_actividad as responsables "
+                . "where responsables.actividad=actividades.actividad "
+                . "and actividades.actividad=$IdActividad "
+                . "and regpersonal @> array[$regPersonal] "
+                . "order by carnet;";        
+    }
+    
+    function queryResponsableActividad($IdActividad,$regPersonal,$Carnet){
+        return "select actividades.notaobtenida, responsables.responsable "
+        . "from tbnotas_actividad as actividades,tbregpersonal_actividad as responsables "
+                . "where responsables.actividad=actividades.actividad "
+                . "and actividades.actividad=$IdActividad "
+                . "and responsable =$regPersonal "
+                . "and carnet=$Carnet;";
     }
 
     /**
