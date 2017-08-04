@@ -66,7 +66,7 @@ Class AssignedCourseRecord_SQL extends General_SQL
      */
     function CargaNotasActividades_select1($Curso, $Seccion, $Periodo, $Anio, $Carnet)
     {
-        return "select a.nombre as nombreactividad,a.tipoactividad,a.pertenecea, a.posicion,a.fecharealizar,
+        /*return "select a.nombre as nombreactividad,a.tipoactividad,a.pertenecea, a.posicion,a.fecharealizar,
                     ta.nombre as nombretipoactividad, ts.shortname as abreviatura,
                     na.actividades[a.posicion],a.ponderacion
                 from ing_actividad a, ing_tipoactividad ta,ing_notasactividad na,tbscheduletype ts
@@ -82,7 +82,20 @@ Class AssignedCourseRecord_SQL extends General_SQL
                     and a.anio=na.anio
                     and na.carnet='$Carnet'
                     and ts.idscheduletype=a.pertenecea::SMALLINT
-                order by a.fecharealizar,a.tipoactividad";
+                order by a.fecharealizar,a.tipoactividad";*/
+        return "select A.nombre as nombreactividad, A.tipo, A.scheduletype as pertenecea, A.fechaentrega as fecharealizar,
+T.nombre as nombretipoactividad, S.shortname as abreviatura, N.notaobtenida as actividades, A.ponderacion
+from tbactividad_curso as A, tbscheduletype as S, ing_tipoactividad as T, tbnotas_actividad as N
+where N.carnet ='$Carnet'
+	and A.activo =1
+	and A.curso = $Curso
+	and A.carrera=$Seccion
+	and A.periodo='$Periodo'
+	and A.anio=$Anio
+	and A.idactividad = N.actividad
+	and A.tipo =T.idtipoactividad
+	and A.scheduletype=S.idscheduletype
+	";
     }
 
     /**
