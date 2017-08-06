@@ -577,8 +577,11 @@ class D_LoadNotesScheduleManager
 //                             $_SESSION["sUsuarioDeSesion"]->mUsuario);
 
         $query_curso = $this->gsql->DarListadoDeCursos_select1($periodo, $anio,$pIdDocente);
+        
         $_SESSION["sConexion"]->query($query_curso);
-
+        $_SESSION["sConexion2"]=$query_curso;
+        
+       
         $numero_filas = $_SESSION["sConexion"]->num_rows();
 
         return $numero_filas;
@@ -595,7 +598,7 @@ class D_LoadNotesScheduleManager
     {
         $query_curso = $this->gsql->DarListadoDeCursos1_select1($periodo, $anio,$usuarioid);
 
- //echo "<br>",$query_curso,"<br>"; die;
+// echo "<br>",$query_curso,"<br>";
 
         $_SESSION["sConexion"]->query($query_curso);
 
