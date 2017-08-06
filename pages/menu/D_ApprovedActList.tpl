@@ -39,6 +39,18 @@
             Ventana=document.open('../.././fw/controller/manager/COAC_CourseActPDF.php?{aParametros}','NotasCurso',propiedades);
         }
     </script>
+        
+    <script language="javascript">
+
+    function Aprobar() {
+        valor = confirm("Al aprobar las notas de las actividades acá mostradas, ya no podrá realizar ninguna modificación.\n" + "¿Seguro que desea aprobar la información?");
+        if (valor) {
+            document.aprobarcurso.submit();
+        }
+        return false;
+    }
+
+</script>
 
 </head>
 <body>
@@ -122,9 +134,8 @@
                                                                         <thead>
                                                                         <tr>
                                                                             <th width='5%'>No.</th>
-                                                                            <th width='12%'>CARNET</th>
-																			<th width='5%'>REGISTRO <br>ACADÉMICO</th>
-                                                                            <th width='38%'>NOMBRE</th>
+                                                                            <th width='5%'>CARNET</th>
+                                                                            <th width='50%'>NOMBRE</th>
                                                                             <th width='10%'>&nbsp;<!--Laboratorio--></th>
                                                                             <th width='10%' align="center">ZONA</th>
                                                                             <th width='10%' align="center">EXAMEN <br>FINAL</th>
@@ -135,7 +146,6 @@
                                                                         <!-- START BLOCK : LISTADO -->
                                                                         <tr>
                                                                             <td> {Numero}</td>
-																			<td> {Cui}</td>
                                                                             <td> {Carne}</td>
                                                                             <td> {Apellido}, {Nombre}
                                                                                   {Congelando}</td>
@@ -154,6 +164,7 @@
                                                                 <table>
                                                                     <tr>
                                                                         <td>
+                                                                          
                                                                         </td>
                                                                         <td>
                                                                             <!-- START BLOCK : ACTACURSO -->
@@ -185,14 +196,87 @@
                                                                 </tr>
                                                                 </tbody>
                                                             </table>
+                                                                
                                                         </div>
+                                                                <!-- listado de zonas finales, si existiese el caso de que el catedratico no aprobo las notas dentro del periodo -->
+                                                        <!-- START BLOCK : listadoZonas -->
+                                                        
+                                                            <div id="sitebody">
+                                                                <div class="siterow"><br/><div class="siterow-center"><span>LISTADO DE ZONAS "Sin Aprobar"</span></div><br/></div>                                                                
+                                                                <br>
+                                                                <hr>
+                                                                <div id="dynheader" class="restrict_right"></div>
+                                                                <div class="ff_pane" style="display: block;">
+                                                                    <table class='RAsig-table' id="dgTablaDatos" name="dgTablaDatos" align='left'  cellspacing="0" width="95.5%">
+                                                                        <thead>
+                                                                        <tr>
+                                                                            <th>No.</th>
+                                                                            <th>CARNET</th>
+                                                                            <th>NOMBRE</th>
+                                                                            <th ><div align="center">TOTAL ZONA</div></th>
+                                                                            <th hidden="true">D</th>
+                                                                        </tr>
+                                                                        </thead>
+                                                                        <tbody>
+                                                                        <!-- START BLOCK : filaestudiante -->
+                                                                        <tr>
+                                                                            <td>{txtContador}&nbsp; </td>
+                                                                            <td>{txtLinkCarnet}&nbsp; </td>
+                                                                            <td>{txtNombre}&nbsp;</td>
+                                                                            <!-- START BLOCK : totalmagistral -->                                                                            
+                                                                            <td align="center"><span class="note-font-style"> <font color="{color}">{txtTotalZona}&nbsp;</font></td>
+                                                                            <!-- END BLOCK : totalmagistral -->                                                                            
+                                                                        </tr>
+                                                                        <!-- END BLOCK : filaestudiante -->
+                                                                        </tbody>
+                                                                    </table>
+                                                                </div>
+                                                                <div>
+                                                                    <hr>
+                                                                    <table>
+                                                                        <tr>
+                                                                            <td>
+                                                                                <form name="aprobarcurso" id="aprobarcurso" action="D_ApprovedActList.php?" onsubmit="return Aprobar();">
+                                                                                    <table border="0" align="left">
+                                                                                        <tr>
+                                                                                            <td>
+                                                                                                <input name="opcion" type="hidden" value="1" />
+                                                                                                <input name="txtCurso" type="hidden" value="{txtCurso}" />
+                                                                                                <input name="txtLaSeccion" type="hidden" value="{txtLaSeccion}" />
+                                                                                                <input name="txtCarrera" type="hidden" value="{txtCarrera}" />
+                                                                                                <input name="txtPeriodo" type="hidden" value="{txtPeriodo}" />
+                                                                                                <input name="txtAnio" type="hidden" value="{txtAnio}" />
+                                                                                                <input name="txtRegPer" type="hidden" value="{txtRegPer}" />
+                                                                                                <label>
+                                                                                                    <input type="{tipoaprobar}" style="width: auto !important;" class="nbtn grbtn btn_midi" name="button" id="button" value="Aprobar Notas de Actividades" >
+                                                                                                </label>
+                                                                                            </td>
+                                                                                        </tr>
+                                                                                    </table>
+                                                                                </form>
+                                                                            </td>                                                                            
+                                                                        </tr>
+                                                                    </table>
+                                                                    <br/>                        
+                                                                </div>
+                                                                <br>
+                                                                <br>
+                                                            </div>
+                                                            <!-- START BLOCK : mensaje -->
+                                                            <center>
+                                                                {mensaje}
+                                                            </center>
+                                                            <!-- END BLOCK : mensaje -->
+                                                        <!-- END BLOCK : listadoZonas -->
+                                                                <!-- fin de listado de zonas finales-->
                                                     </div>
                                                 </div>
                                                 <div id="buttons">
-                                                    <input type="submit" name="Regresar" id="Regresar"
+                                                    <input type="submit" name="Regresar" id="Regresar" title="COAC_ActCourseList.php?anio={vAnio}&periodo={periodo}"
                                                            value="Regresar a listado de cursos"
                                                            class="nbtn rbtn btn_midi btn_exp_h okbutton"
-                                                           onclick='javascript:redireccionar("D_CourseList.php?anio={vAnio}&periodo={periodo}");'/>
+                                                           onclick='javascript:redireccionar("COAC_ActCourseList.php?anio={vAnio}&periodo={periodo}");'/>
+                                                    <!-- D_CourseList -->
                                                 </div>
                                                 <div class="clear"></div>
                                             </div>

@@ -45,6 +45,7 @@ class D_CourseNotesManager
     { //   Se realiza una conexion con el Servidor de la Base de datos
         $_SESSION["sNotas"] = NEW DB_Connection();
         if ($_SESSION["sNotas"]->connect() == 100) {
+            //retorna 100 si falla
             $_SESSION["sErrorBDD"] = 0;
         }
         $this->mHabilitado = 0; //Inicializa la variable que indicara que puede ingresar notas
@@ -59,10 +60,14 @@ class D_CourseNotesManager
     // ************************************************************
     // Valida Fechas de Ingreso de Notas
     // Verifica si la fecha actual se encuentra dentro del Rango
-    // Permitido para ingreso de notas de un período en específico.
+    // permitido para ingreso de notas de un período en específico.
     // ************************************************************
     function ValidaRangoFechas($param_periodo, $param_anio,$_SESSION_curso,$_SESSION_carrera)
     {
+        /*
+         * retorna 0  si no existen datos
+         * retorna 1  luego de verificar fechas dentro del rago permitido
+         */
         $query_fecha = $this->gsql->ValidaRangoFechas_select1($param_periodo, $param_anio,$_SESSION_curso,$_SESSION_carrera);
 
         $_SESSION["sNotas"]->query($query_fecha);
