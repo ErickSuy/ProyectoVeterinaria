@@ -51,6 +51,15 @@ $tpl->assign("periodo", $_SESSION["sObjNotas"]->mPeriodo);
 $tpl->assign("vAnio", $_SESSION["sObjNotas"]->mAnio);
 $tpl->assign("vCarrera", $obj_cad->StringCarrera('0'.$_SESSION["sObjNotas"]->mCarrera));
 
+/**********************
+ *  Creacion de boton para gestion de asingacion de estudiantes
+ ***********************/
+$tpl->assign("txtCurso", $_SESSION["sObjNotas"]->mCurso);
+$tpl->assign("txtPeriodo", $_SESSION["sObjNotas"]->mPeriodo);
+$tpl->assign("txtAnio", $_SESSION["sObjNotas"]->mAnio);
+$tpl->assign("txtCarrera", $_SESSION["sObjNotas"]->mCarrera );
+// fin de creacion para gestion de asingacion de estudiantes.
+
 $cuenta_aprobados = 0;
 $cuenta_perdidos = 0;
 $nota_aprobacion = 61;
@@ -205,6 +214,13 @@ switch ($opcion){
         $txtAnio = $_GET['txtAnio'];
         aprobarNotasCurso($tpl,$txtCurso,$txtCarrera,$txtPeriodo,$txtAnio,getCursoAprobado($curso, $carrera, $periodo, $anio));
         //print_r("estoy aprobando");
+        break;
+    case 2: // pedicion asignar Estudiantes recientemente asignados.
+        $txtCurso = $_GET['txtCurso'];
+        $txtCarrera = $_GET['txtCarrera'];
+        $txtPeriodo = $_GET['txtPeriodo'];
+        $txtAnio = $_GET['txtAnio'];
+        asignarEstudiantes($tpl, $txtCurso, $txtCarrera, $txtPeriodo, $txtAnio);
         break;
 }
 
@@ -419,6 +435,46 @@ function getCursoAprobado($curso, $carrera, $periodo, $anio){
             return false;
         }
 }
+
+
+function asignarEstudiantes($tpl,$curso,$carrera,$periodo,$anio){
+    /*
+     * Normalmente cuando el catedratico inicia por primera vez el sistema crea las actividades y las asigna
+     * a los estudiantes que esten en ese momento asignados, pero existen ocasiones cuando el estudiante
+     * crea asignaciones al cursos extemporaneas y es necesario asignar manualmente aquellos estudiantes que 
+     * no tengan las actividades asignadas.
+     */
+    global $controladorListadoAct;
+    global $bd;    
+    //$tpl->gotoBlock("listadoZonas");
+    
+    $bd->query($controladorListadoAct->begin());  // INICIAR TRANSACCION
+    $ERROR = 0;
+    $ManejoErrores="";
+    
+    $queryAsignacion = $controladorListadoAct->queryAsignarEstudiantes($curso,$periodo,$anio, $carrera);
+    $ERROR+=(!$bd->query($queryAsignacion)) ? 1 :  0;
+    
+    $resultado="";
+    while (($bd->next_record()) != null) {
+        $InsertResult = $bd->r();
+        $resultado.=$InsertResult[0];
+    }
+    
+    if ($ERROR == 0) {
+        $bd->query($controladorListadoAct->commit());
+        $ManejoErrores = "Asignacion Actividades de Estudiantes Extemporanea Exitosa";
+    }else{            
+        $bd->query($controladorCrearActividad->rollback());
+        $ManejoErrores = "Sucedio un error al asignar actividades a los estudiantes del curso solicite apoyo Unidad Virtual FMVZ.";
+    }
+    
+    $bd->query($controladorListadoAct->end());
+    $tpl->gotoBlock("_ROOT");
+    $tpl->assign("mensajeROOT", '<div class="alert alert-success"><h4><i class="fa fa-info"></i> ASIGNACION DE ACTIVIDADES</h4>'
+            . $resultado.'<br><br>'.$ManejoErrores.'</div>');
+}
+
 
 function aprobarNotasCurso($tpl,$curso,$carrera,$periodo,$anio, $aprobado){
     global $controladorListadoAct;
