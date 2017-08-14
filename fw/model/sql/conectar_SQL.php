@@ -22,7 +22,6 @@ Class conectar_SQL extends General_SQL {
         return "select * from tbconn_connection where idsession='" . session_id() . "' and idgroup=" . $_GRUPO_DOCENTE . " and date>='" . date("Y") .
         "-" . date("m") . "-" . date("d") . " " . (date("H")-1) . ":" . date("i"). ":" . date("s") . ".000000000'";
     }
-
     /**
      * @detalleBD BD_portal2.html
      * @diagramaBD BD_portal2.pdf
@@ -31,8 +30,21 @@ Class conectar_SQL extends General_SQL {
      * @ref #2
      * @línea   #50
      */
-    function sistemaHabilitado_select1($txtPeriodo,$txtAnio,$txtCurso,$txtCarrera){
+    function sistemaHabilitado_calendario($txtPeriodo,$txtAnio,$txtCurso,$txtCarrera){
         return "select * from  ing_calendarioactividades where periodo='". $txtPeriodo ."' and anio=" . $txtAnio ." and curso=" . $txtCurso ." and carrera=" . $txtCarrera.";";
+    }
+    
+     function sistemaHabilitado($txtPeriodo,$txtAnio,$txtCurso,$txtCarrera){
+        return "select * from  ing_calendarioactividades where periodo='". $txtPeriodo ."' and anio=" . $txtAnio ." and curso=" . $txtCurso ." and carrera=" . $txtCarrera.";";
+    }
+    
+    function sistemaHabilitado_getActividades($txtPeriodo,$txtAnio,$txtCurso,$txtCarrera){
+        return "select * from tbactividad_curso
+            where 
+            curso='$txtCurso'
+            and periodo='$txtPeriodo'
+            and carrera='$txtCarrera'
+            and anio='$txtAnio'";
     }
 
     /**

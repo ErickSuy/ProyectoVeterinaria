@@ -63,7 +63,38 @@ function verifar_habilitacionSistema($bd,$txtPeriodo,$txtAnio,$txtCurso,$txtSecc
     else
         return 1; // Calendario de actividades sin registrar en BDD aún
 }
-  
+
+/*ERICK SUY 06082017
+
+ * Verificar la habilitacion del sistema
+ * se hara efectiva cuando la solicitud de presentar el menu 
+ *          zonas           : se presentara hasta la fecha final de examenes finales
+ *          notas finales   : se presentara cuando la fecha de finales sea valida   */  
+function habilitacionSistema($bd,$Periodo,$Anio,$Carrera,$Curso){
+    global $gsql_na_c;
+    $sqlbusca= $gsql_na_c->sistemaHabilitado_calendario($Periodo,$Anio,$Curso,$Carrera);
+    $bd->query($sqlbusca);
+    if($bd->num_rows()>0) {
+        $regCalendario=$bd->next_record();
+	$regCalendario=$bd->r();
+        $fechaInicio = trim($regCalendario["inicioperiodo"]);
+        $fechaFin    = trim($regCalendario["finalfinales"]);
+        $fechahoy    = date("Y")."-".date("m")."-".date("d");
+        if (($fechahoy >= $fechaInicio) && ($fechahoy <= $fechaFin))
+            return 100; //Sistema habilitado y aún en fecha para el ingreso de actividades retorna 100
+        else {
+            $sqlbusca = $gsql_na_c->sistemaHabilitado_getActividades($Periodo,$Anio,$Curso,$Carrera);            
+            $bd->query($sqlbusca);
+            
+            if ($bd->num_rows()>0)
+	      return 2; //Existe información de actividades procesadas
+	    else
+	      return 3; //Sin información de actividades procesadas
+         }
+    }
+    return 1;
+}
+
 
 function sistemaHabilitado($bd,$txtPeriodo,$txtAnio,$txtCurso,$txtSeccion,$txtRegPer) {
     global $gsql_na_c;

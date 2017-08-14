@@ -13,7 +13,7 @@ include_once("$dir_portal/fw/model/mapping/TbUser.php");
 include_once("$dir_portal/fw/view/lib/TemplatePower.php");
 include_once("$dir_portal/fw/view/validator/ManejoString.php");
 include_once("$dir_portal/fw/controller/manager/D_LoadNotesScheduleManager.php");
-include_once("$dir_portal/pages/notas-actividades/conectar.php"); // referencia para la creacion de funciones
+include_once("$dir_portal/pages/notas-actividades/conectar.php"); // referencia para la creacion de funciones habilitado
 
 session_start();
 
@@ -56,10 +56,10 @@ $base->connect();
 $listado = new D_LoadNotesScheduleManager();
 $numero_filas = $listado->DarListadoDeCursos($periodo, $anio, $objuser->getId());
 
-function verificar_sistemaHabilitado($bd, $txtPeriodo, $txtAnio, $txtCurso, $txtCarrer, $txtRegPer){
+function verificar_sistemaHabilitado($bd,$Periodo,$Anio,$Carrera,$Curso){
     /*Este metodo se encargara de verificar si el sistema es apto para cargar
       aactividades o presentarle al usuario la carga de finales.     */
-    $_resVerificacion = sistemaHabilitado($bd, $txtPeriodo, $txtAnio, $txtCurso, $txtCarrera/*$txtSeccion*/, $txtRegPer);
+    return habilitacionSistema($bd,$Periodo,$Anio,$Carrera,$Curso);
     //$_resVerificacion=100;
     
 }
@@ -228,23 +228,37 @@ if (count($vListadoCursos)) {
         if(count($vAcciones)) {
             $lAcciones .= '<a href="#" class="easyui-menubutton" data-options="menu:\'#mm' . $i . '\'"><i class="fa fa-pencil"></i></a>';
             $lAcciones .= '<div id="mm' . $i . '" style="width:150px;">';
+            //$bd,$Periodo,$Anio,$Carrera,$Curso
+            $sistema = verificar_sistemaHabilitado($base, $periodo, $anio,$vListadoCursos[$j]['car'], $vListadoCursos[$j]['cur']);
 
             while (list($key, $value) = each($vAcciones)) {
                 switch ($key) {
                     case 1 :
-                        $lAcciones .= '<div iconCls="fa fa-tasks" title="Carga de notas de las actividades correspondientes a la clase magistral" onclick="window.location.href = \''. $value .'\'"">Zonas del curso</div>';
-                        $newValue = str_replace("creaactividad", "crearActividad", $value);
-                        $newValue = str_replace("opcion=9", "opcion=1", $newValue);
-                        $value=$newValue;
-                        $lAcciones .= '<div iconCls="fa fa-tasks" title='.$value.' onclick="window.location.href = \''. $value .'\'"">Zonas de curso test</div>';
-                        
+                        if($sistema==100){
+                            //$lAcciones .= '<div iconCls="fa fa-tasks" title="Carga de notas de las actividades correspondientes a la clase magistral" onclick="window.location.href = \''. $value .'\'"">Zonas del curso</div>';
+                            $newValue = str_replace("creaactividad", "crearActividad", $value);
+                            $newValue = str_replace("opcion=9", "opcion=1", $newValue);
+                            $value=$newValue;
+                            $lAcciones .= '<div iconCls="fa fa-tasks" title='.$value.' onclick="window.location.href = \''. $value .'\'"">Zonas de curso</div>';
+                        }                        
                        //echo $value . '<br>';
                         break;
                     case 2 :
                         $lAcciones .= '<div iconCls="fa fa-flask" title="Carga de notas de las actividades correspondientes al laboratorio" onclick="window.location.href = \''. $value .'\'""> Laboratorio</div>';
                         break;
                     default:
-                        $lAcciones .= '<div iconCls="fa fa-check" title="Carga de notas correspondientes al examen final" onclick="window.location.href = \''. $value .'\'">Nota de Finales</div>';
+                        switch ($sistema){
+                        case 1: //no existen calendario.
+                            $lAcciones .= '<div iconCls="fa fa-check" title="No tiene calendarios asignado" onclick="window.location.href = \''. $value .'\'">Falta Calendario</div>';
+                            break;
+                        case 2: //existe info de actividades procesadas
+                            $lAcciones .= '<div iconCls="fa fa-check" title="Carga de notas correspondientes al examen final" onclick="window.location.href = \''. $value .'\'">Nota de Finales</div>';
+                            break;
+                        case 3://no existe info de actividades procesadas
+                            $lAcciones .= '<div iconCls="fa fa-check" title="No se encuentra informacion de actividades" onclick="window.location.href = \''. $value .'\'">Inconveniente Actividades</div>';
+                            break;
+                        }
+                        
                 }
             }
             
