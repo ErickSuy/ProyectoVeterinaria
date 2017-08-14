@@ -49,6 +49,14 @@
         }
         return false;
     }
+    
+    function AsignarEstudiantes() {
+        valor = confirm("Desea agregar las actividades ya creadas a los estudiantes asignados recientemente?");
+        if (valor) {
+            document.asignarEstudiante.submit();
+        }
+        return false;
+    }
 
 </script>
 
@@ -174,8 +182,30 @@
                                                                         <td>
                                                                             <input type="button" style="width: auto !important;" class="nbtn gbtn btn_midi" onClick="imprimirReporte()" value="Generar Impresión">
                                                                         </td>
+                                                                         <td>
+                                                                                <form name="asignarEstudiante" id="asignarEstudiante" action="D_ApprovedActList.php?" onsubmit="return AsignarEstudiantes();">
+                                                                                    <table border="0" align="left">
+                                                                                        <tr>
+                                                                                            <td>
+                                                                                                <input name="opcion" type="hidden" value="2" />
+                                                                                                <input name="txtCurso" type="hidden" value="{txtCurso}" />
+                                                                                                <input name="txtCarrera" type="hidden" value="{txtCarrera}" />
+                                                                                                <input name="txtPeriodo" type="hidden" value="{txtPeriodo}" />
+                                                                                                <input name="txtAnio" type="hidden" value="{txtAnio}" />
+                                                                                                <label>
+                                                                                                    <input type="submit" style="width: auto !important;" class="nbtn grbtn btn_midi" name="button" id="button" value="Asignar actividades Estudiantes" >
+                                                                                                </label>
+                                                                                            </td>
+                                                                                        </tr>
+                                                                                    </table>
+                                                                                </form>
+                                                                            </td>
                                                                     </tr>
                                                                 </table>
+                                                               
+                                                                <center>
+                                                                    {mensajeROOT}
+                                                                </center>
                                                             </div>
                                                             <br>
                                                             <br>
@@ -257,6 +287,7 @@
                                                                             </td>                                                                            
                                                                         </tr>
                                                                     </table>
+                                                                                                
                                                                     <br/>                        
                                                                 </div>
                                                                 <br>

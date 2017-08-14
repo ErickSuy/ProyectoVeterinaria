@@ -85,6 +85,10 @@ Class listado_SQL extends General_SQL {
                 . "$Periodo::int2,"
                 . "$Carrera::int2);";
     }
+    
+    function queryAsignarEstudiantes($Curso,$Periodo, $Anio,$Carrera){
+        return "SELECT asignarActividadesAlumnos($Anio, '$Periodo', $Curso, $Carrera);";
+    }
             
      function queryNombreActividad($Curso,$Periodo, $Carrera, $Anio){ //Agregar curso,periodo,carrera,anio
         return "select  nombre,ponderacion,idactividad,fechaentrega from tbactividad_curso where
