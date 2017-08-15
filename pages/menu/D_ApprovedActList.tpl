@@ -303,10 +303,10 @@
                                                     </div>
                                                 </div>
                                                 <div id="buttons">
-                                                    <input type="submit" name="Regresar" id="Regresar" title="COAC_ActCourseList.php?anio={vAnio}&periodo={periodo}"
+                                                    <input type="submit" name="Regresar" id="Regresar" title="Listado Cursos"
                                                            value="Regresar a listado de cursos"
                                                            class="nbtn rbtn btn_midi btn_exp_h okbutton"
-                                                           onclick='javascript:redireccionar("COAC_ActCourseList.php?anio={vAnio}&periodo={periodo}");'/>
+                                                           onclick='javascript:redireccionar("D_CourseList.php?anio={vAnio}&periodo={periodo}");'/>
                                                     <!-- D_CourseList -->
                                                 </div>
                                                 <div class="clear"></div>
