@@ -80,8 +80,23 @@ function habilitacionSistema($bd,$Periodo,$Anio,$Carrera,$Curso){
         $fechaInicio = trim($regCalendario["inicioperiodo"]);
         $fechaFin    = trim($regCalendario["finalfinales"]);
         $fechahoy    = date("Y")."-".date("m")."-".date("d");
-        if (($fechahoy >= $fechaInicio) && ($fechahoy <= $fechaFin))
-            return 100; //Sistema habilitado y aún en fecha para el ingreso de actividades retorna 100
+        if (($fechahoy >= $fechaInicio) && ($fechahoy <= $fechaFin)){
+            //verificar si ya fue aprobado el curso.
+             if($periodo==PRIMERA_RETRASADA_DEL_PRIMER_SEMESTRE || $periodo==SEGUNDA_RETRASADA_DEL_PRIMER_SEMESTRE ||
+                                $periodo==PRIMERA_RETRASADA_DEL_SEGUNDO_SEMESTRE || $periodo==SEGUNDA_RETRASADA_DEL_SEGUNDO_SEMESTRE){
+                                return 100;
+                                }
+            $queryGetAprobacion = $gsql_na_c->queryGetAprobacionCurso($curso, $carrera, $periodo, $anio);
+            $bd->query($queryGetAprobacion);
+            $resultadoQuery=(($bd->next_record()) != null)? $bd->r():null;
+            if($resultadoQuery!=null &&  $resultadoQuery[aprobado]==1){ 
+            //$_SESSION[CursoAprobado] = 1;            
+                return 4; //sistema aprobado no se puede ingresas actividades
+            }else{
+                //$_SESSION[CursoAprobado] = 0;
+                return 100; // no esta aprobado aun ingrso actividades.
+            }
+        }    
         else {
             $sqlbusca = $gsql_na_c->sistemaHabilitado_getActividades($Periodo,$Anio,$Curso,$Carrera);            
             $bd->query($sqlbusca);

@@ -412,24 +412,31 @@ function mostrarListadoAlumnos($tpl,$index,$curso,$carrera,$periodo,$anio,$regPe
         
     }else{
         //mensaje de alerta notificando, que no exiten actividades para este curso.
-        $tpl->newblock("mensaje");
-        $tpl->assign("mensaje", '<div class="alert alert-danger">
-        <h4><i class="fa fa-info"></i> NOTAS DE ACTIVIDADES</h4>
-        No existen actividades creadas para este curso.
-        </div>');
+        if($periodo==PRIMER_SEMESTRE || $periodo==SEGUNDO_SEMESTRE || $periodo==VACACIONES_DEL_PRIMER_SEMESTRE || $periodo==VACACIONES_DEL_SEGUNDO_SEMESTRE){
+            $tpl->newblock("mensaje");
+            $tpl->assign("mensaje", '<div class="alert alert-danger">
+            <h4><i class="fa fa-info"></i> NOTAS DE ACTIVIDADES</h4>
+            No existen actividades creadas para este curso.
+            </div>');
+        }
     }
 }
 
 function getCursoAprobado($curso, $carrera, $periodo, $anio){
     global $controladorListadoAct;
     global $bd;
+    //retrasadas no se aprueban
+    if($periodo==PRIMERA_RETRASADA_DEL_PRIMER_SEMESTRE || $periodo==SEGUNDA_RETRASADA_DEL_PRIMER_SEMESTRE ||
+                $periodo==PRIMERA_RETRASADA_DEL_SEGUNDO_SEMESTRE || $periodo==SEGUNDA_RETRASADA_DEL_SEGUNDO_SEMESTRE){
+            return  1;
+                }
     /*observar si este curso ya fueron aprobadas las notas*/
         $queryGetAprobacion = $controladorListadoAct->queryGetAprobacionCurso($curso, $carrera, $periodo, $anio);
         $bd->query($queryGetAprobacion);
         $resultadoQuery=(($bd->next_record()) != null)? $bd->r():null;
         if($resultadoQuery!=null &&  $resultadoQuery[aprobado]==1){ 
             //$_SESSION[CursoAprobado] = 1;            
-            return true;;
+            return true;
         }else{
             //$_SESSION[CursoAprobado] = 0;
             return false;

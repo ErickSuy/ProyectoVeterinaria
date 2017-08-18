@@ -249,17 +249,26 @@ if (count($vListadoCursos)) {
                     default:
                         switch ($sistema){
                         case 1: //no existen calendario.
-                            $lAcciones .= '<div iconCls="fa fa-check" title="No tiene calendarios asignado" onclick="window.location.href = \''. $value .'\'">Falta Calendario</div>';
+                             if($periodo==PRIMERA_RETRASADA_DEL_PRIMER_SEMESTRE || $periodo==SEGUNDA_RETRASADA_DEL_PRIMER_SEMESTRE ||
+                                $periodo==PRIMERA_RETRASADA_DEL_SEGUNDO_SEMESTRE || $periodo==SEGUNDA_RETRASADA_DEL_SEGUNDO_SEMESTRE){
+                                 $lAcciones .= '<div iconCls="fa fa-check" title="Notas finales Retrasada" onclick="window.location.href = \''. $value .'\'">Nota de Finales</div>';
+                             }else{                                 
+                                $lAcciones .= '<div iconCls="fa fa-check" title="No tiene calendarios asignado" onclick="window.location.href ="#">Falta Calendario</div>';
+                             }
                             break;
                         case 2: //existe info de actividades procesadas
-                            $lAcciones .= '<div iconCls="fa fa-check" title="Carga de notas correspondientes al examen final" onclick="window.location.href = \''. $value .'\'">Nota de Finales</div>';
+                            $lAcciones .= '<div iconCls="fa fa-check" title="Ingreso Notas Finales" onclick="window.location.href = \''. $value .'\'">Nota de Finales</div>';
+                            break;
+                        case 4: //existe aprobacion de curso.
+                            $lAcciones .= '<div iconCls="fa fa-check" title="Ingreso Notas Finales" onclick="window.location.href = \''. $value .'\'">Nota de Finales</div>';
                             break;
                         case 3://no existe info de actividades procesadas
-                            $lAcciones .= '<div iconCls="fa fa-check" title="No se encuentra informacion de actividades" onclick="window.location.href = \''. $value .'\'">Inconveniente Actividades</div>';
+                            $lAcciones .= '<div iconCls="fa fa-check" title="No se encuentra informacion de actividades" onclick="window.location.href = "#">Sin Actividades</div>';
                             break;
                         }
                         
                 }
+                //$lAcciones .= '<div iconCls="fa fa-tasks" title='.$value.' onclick="window.location.href = \''. $value .'\'"">Zonas de curso tmp</div>';
             }
             
             $lAcciones .= '</div>';
