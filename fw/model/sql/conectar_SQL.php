@@ -34,6 +34,19 @@ Class conectar_SQL extends General_SQL {
         return "select * from  ing_calendarioactividades where periodo='". $txtPeriodo ."' and anio=" . $txtAnio ." and curso=" . $txtCurso ." and carrera=" . $txtCarrera.";";
     }
     
+    function queryGetAprobacionCurso($curso, $carrera, $periodo, $anio){
+    
+        return "select  
+	case when fecha isnull then 0
+			else 1
+	end as aprobado
+        from ing_fechaaprobacionactividad 
+        where curso='$Curso' and "
+                . "seccion='$Carrera' and "
+                . "anio='$Anio' and "
+                . "periodo='$Periodo'";
+}
+    
      function sistemaHabilitado($txtPeriodo,$txtAnio,$txtCurso,$txtCarrera){
         return "select * from  ing_calendarioactividades where periodo='". $txtPeriodo ."' and anio=" . $txtAnio ." and curso=" . $txtCurso ." and carrera=" . $txtCarrera.";";
     }
