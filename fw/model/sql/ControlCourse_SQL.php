@@ -7,7 +7,7 @@
      */
 
 
-    require_once("/var/www/path.inc.php");
+    require_once("../../path.inc.php");
     require_once("$dir_portal/fw/model/Connection.php");
 
     class ControlCourse_SQL

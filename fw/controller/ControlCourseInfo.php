@@ -1,6 +1,6 @@
 <?php
 
-include_once("/var/www/path.inc.php");
+include_once("../../path.inc.php");
 include_once("$dir_biblio/biblio/SysConstant.php");
 
 class ControlCourseInfo
