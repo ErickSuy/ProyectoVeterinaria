@@ -82,8 +82,8 @@ function habilitacionSistema($bd,$Periodo,$Anio,$Carrera,$Curso){
         $fechahoy    = date("Y")."-".date("m")."-".date("d");
         if (($fechahoy >= $fechaInicio) && ($fechahoy <= $fechaFin)){
             //verificar si ya fue aprobado el curso.
-             if($periodo==PRIMERA_RETRASADA_DEL_PRIMER_SEMESTRE || $periodo==SEGUNDA_RETRASADA_DEL_PRIMER_SEMESTRE ||
-                                $periodo==PRIMERA_RETRASADA_DEL_SEGUNDO_SEMESTRE || $periodo==SEGUNDA_RETRASADA_DEL_SEGUNDO_SEMESTRE){
+             if($Periodo==PRIMERA_RETRASADA_DEL_PRIMER_SEMESTRE || $Periodo==SEGUNDA_RETRASADA_DEL_PRIMER_SEMESTRE ||
+                                $Periodo==PRIMERA_RETRASADA_DEL_SEGUNDO_SEMESTRE || $Periodo==SEGUNDA_RETRASADA_DEL_SEGUNDO_SEMESTRE){
                                 return 100;
                                 }
             $queryGetAprobacion = $gsql_na_c->queryGetAprobacionCurso($Curso, $Carrera, $Periodo, $Anio);
