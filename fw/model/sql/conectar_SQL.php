@@ -34,7 +34,7 @@ Class conectar_SQL extends General_SQL {
         return "select * from  ing_calendarioactividades where periodo='". $txtPeriodo ."' and anio=" . $txtAnio ." and curso=" . $txtCurso ." and carrera=" . $txtCarrera.";";
     }
     
-    function queryGetAprobacionCurso($curso, $carrera, $periodo, $anio){
+    function queryGetAprobacionCurso($Curso, $Carrera, $Periodo, $Anio){
     
         return "select  
 	case when fecha isnull then 0
