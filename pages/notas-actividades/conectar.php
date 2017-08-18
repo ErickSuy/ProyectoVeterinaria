@@ -86,7 +86,7 @@ function habilitacionSistema($bd,$Periodo,$Anio,$Carrera,$Curso){
                                 $periodo==PRIMERA_RETRASADA_DEL_SEGUNDO_SEMESTRE || $periodo==SEGUNDA_RETRASADA_DEL_SEGUNDO_SEMESTRE){
                                 return 100;
                                 }
-            $queryGetAprobacion = $gsql_na_c->queryGetAprobacionCurso($curso, $carrera, $periodo, $anio);
+            $queryGetAprobacion = $gsql_na_c->queryGetAprobacionCurso($Curso, $Carrera, $Periodo, $Anio);
             $bd->query($queryGetAprobacion);
             $resultadoQuery=(($bd->next_record()) != null)? $bd->r():null;
             if($resultadoQuery!=null &&  $resultadoQuery[aprobado]==1){ 
