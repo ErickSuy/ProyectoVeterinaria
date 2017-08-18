@@ -1,7 +1,7 @@
 <?php
 include_once("$dir_portal/fw/model/Connection.php");
-include_once("$dir_portal/fw/modelmapping/TbUser.php");
-include_once("$dir_portal/fw/mapping/TbPrivilege.php");
+include_once("$dir_portal/fw/model/mapping/TbUser.php");
+include_once("$dir_portal/fw/model/mapping/TbPrivilege.php");
 include_once("$dir_biblio/biblio/SysConstant.php");
 
 class ServiceQuery
