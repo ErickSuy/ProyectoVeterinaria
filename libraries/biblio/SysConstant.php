@@ -159,8 +159,9 @@ define("VALOR_CURSO_CUATRO_HRS",165);
 define("VALOR_LABORATORIO",80);
 define("VALOR_CURSO_ESPECIAL",40);
 
+// ---------------------------------------------------------------------------------------------- DEFINICIONES DE PARAMETROS, ERICK SUY 2017
 
-// datos de Tipos de actividades que existen en la Base de Datos Enero 2017 Erick Suy
+// datos de Tipos de actividades que existen en la Base de Datos Enero 2017 Erick Suy -- Tabla ing_tipoactividad
 define("PRIMER_PARCIAL", 1);
 define("SEGUNDO_PARCIAL", 2);
 define("EXAMEN_CORTO", 9);
@@ -170,7 +171,7 @@ define("ACTIVIDAD_LAB",30);
 define("TRABAJO_ESPECIAL", 12);
 
 //Tipo de Actividades que existen el la BD Enero 2017, estas definiciones se utilizan prinicpalmente para
-//filtrar y crear una vista con las actividades estandares detalladas. archivo crearActividad.php -- > "switch case 2"
+//filtrar y crear una vista con las actividades estandares detalladas. archivo crearActividad.php -- > "switch case 2" -- Tabla ing_tipoactividad
 define("PARCIALES","1,2,3,5,123,124,125,126");
 define("EXAMENES_CORTOS","9,60,61,96,97");
 define("TAREAS","18,83,93,121");
@@ -195,15 +196,15 @@ define("ZONAMIN_MODULAR",50);
 define("ZONAMIN_VACAS",40);
 
 //definicion atributos caso especial EPS
-define("id_EPS",1); //el id del curso
+define("id_EPS",743); //el id del curso
 define("ZONA_EPS",100); // Es la zona maxima del curso, no tiene zona y finales unicamente las actividades lo suman
 define("ZONAMIN_EPS",61); // Zona para aprobar el curso.
 
-// datos Tipo de actividdes que existen en la base de datos para gestionar EPS
+// datos Tipo de actividdes que existen en la base de datos para gestionar EPS -- Tabla ing_tipoactividad
 define("ORGANIZACION_SUPERVISION",39);
 define("SERVICIO",94);
 define("INVESTIGACION",31);
-define("DOCENCIA_EXTENSION",128); // Nuevo ingreso a bd
+define("DOCENCIA_EXTENSION",128);
 
 // Punteo actividad EPS
 define("ORG", 25);
