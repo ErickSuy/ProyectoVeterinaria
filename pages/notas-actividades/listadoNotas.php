@@ -200,7 +200,7 @@ function mostrarListado($tpl,$curso,$carrera,$periodo,$anio){
                     if($FilaEstudiante[rnotaobtenida]>=0){
                         $zonaEstudiante=$zonaEstudiante+$FilaEstudiante[rnotaobtenida];
                     }else{
-                        $FilaEstudiante[rnotaobtenida]='nsp';
+                        $FilaEstudiante[rnotaobtenida]='NSP';
                         $actividadesFalta++; //SUMAR LAS FALTAS QUE HAYA COMETIDO
                     }
                     $detalleZona = $detalleZona . '<tr><td><span style="text-transform: uppercase;">'.$FilaEstudiante[rnombre].'</span></td><td align="right">'.$FilaEstudiante[rponderacion].'</td><td align="center">'.$FilaEstudiante[rnotaobtenida].'</td><td></td></tr>';
@@ -265,7 +265,7 @@ function mostrarListado($tpl,$curso,$carrera,$periodo,$anio){
                     if($FilaEstudiante[rnotaobtenida]>=0){
                         $zonaEstudiante=$zonaEstudiante+$FilaEstudiante[rnotaobtenida];
                     }else{
-                        $FilaEstudiante[rnotaobtenida]='nsp';
+                        $FilaEstudiante[rnotaobtenida]='NSP';
                         $actividadesFalta++;
                     }
                     $detalleZona = $detalleZona . '<tr><td><span style="text-transform: uppercase;">'.$FilaEstudiante[rnombre].'</span></td><td align="right">'.$FilaEstudiante[rponderacion].'</td><td align="center">'.$FilaEstudiante[rnotaobtenida].'</td><td></td></tr>';

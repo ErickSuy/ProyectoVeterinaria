@@ -106,13 +106,14 @@ Class creaactividad_SQL extends General_SQL
         . "curso='$curso' and periodo='$periodo' and anio=$anio and seccion='$carrera';";
     }
     
-    function queryValidarActividad($Anio,$Periodo,$Curso,$Carrera,$Fecha,$Crearla,$ZonaMaxima,$Ponderacion,$tipoActividad,$esActualizacion,$notaAnterior){
+    function queryValidarActividad($Anio,$Periodo,$Curso,$Carrera,$Fecha,$Crearla,$ZonaMaxima,$Ponderacion,$tipoActividad,$esActualizacion,$notaAnterior,$idActividad){
         /*la zona maxima proviene de 70|80 para nivel introductorio basico o modulares respectiviamtne
           crearla = true|false -- el usuario decide crear la actividad aunque existiese una activdad en la misma fecha
          *esActualizacion = true|false -- para verifcacion si fuese una edicion de la actividad         
           notaAnterior = es un numero de la ponderacion anterior de la actividad a modificar esto solo si se decide modificar la actividad.     */
+        if(strlen ($idActividad)==0){$idActividad=-1;}
         $retorno = "select * from validarActividad($Anio,'$Periodo'::bpchar,$Curso,$Carrera,"
-                . "'$Fecha',$Crearla,$ZonaMaxima,$Ponderacion,$tipoActividad,$esActualizacion,$notaAnterior);";
+                . "'$Fecha',$Crearla,$ZonaMaxima,$Ponderacion,$tipoActividad,$esActualizacion,$notaAnterior,$idActividad);";
         
         return $retorno;
               
@@ -161,15 +162,20 @@ Class creaactividad_SQL extends General_SQL
         
         
         if($TipoActividadArray==null && $doncencia==null)
-            return "select * from tbactividad_curso where curso=$Curso and anio=$Anio and periodo='".$Periodo."' and carrera=$Carrera order by fechaentrega;";
+            return "select idactividad,(CASE WHEN length(nombre)=0 THEN (select nombre from ing_tipoactividad where idtipoactividad=tipo)
+ 			ELSE nombre END),tipo,fechaentrega,ponderacion,scheduletype,activo from tbactividad_curso where curso=$Curso and anio=$Anio and periodo='".$Periodo."' and carrera=$Carrera order by fechaentrega;";
         else if($TipoActividadArray!=null && $doncencia==null)
-            return "select * from tbactividad_curso where curso=$Curso and anio=$Anio and periodo='".$Periodo."' and carrera=$Carrera and tipo= ANY(array[$TipoActividadArray]) order by fechaentrega;";
+            return "select idactividad,(CASE WHEN length(nombre)=0 THEN (select nombre from ing_tipoactividad where idtipoactividad=tipo)
+ 			ELSE nombre END),tipo,fechaentrega,ponderacion,scheduletype,activo from tbactividad_curso where curso=$Curso and anio=$Anio and periodo='".$Periodo."' and carrera=$Carrera and tipo= ANY(array[$TipoActividadArray]) order by fechaentrega;";
         else if($doncencia!=null && $TipoActividadArray!=null && $all!=null)
-            return "select * from tbactividad_curso where scheduletype=$doncencia and curso=$Curso and anio=$Anio and periodo='".$Periodo."' and carrera=$Carrera and tipo!= ALL(array[$TipoActividadArray]) order by fechaentrega;";
+            return "select idactividad,(CASE WHEN length(nombre)=0 THEN (select nombre from ing_tipoactividad where idtipoactividad=tipo)
+ 			ELSE nombre END),tipo,fechaentrega,ponderacion,scheduletype,activo from tbactividad_curso where scheduletype=$doncencia and curso=$Curso and anio=$Anio and periodo='".$Periodo."' and carrera=$Carrera and tipo!= ALL(array[$TipoActividadArray]) order by fechaentrega;";
         else if($doncencia!=null && $TipoActividadArray!=null)
-            return "select * from tbactividad_curso where scheduletype=$doncencia and curso=$Curso and anio=$Anio and periodo='".$Periodo."' and carrera=$Carrera and tipo= ANY(array[$TipoActividadArray]) order by fechaentrega;";
+            return "select idactividad,(CASE WHEN length(nombre)=0 THEN (select nombre from ing_tipoactividad where idtipoactividad=tipo)
+ 			ELSE nombre END),tipo,fechaentrega,ponderacion,scheduletype,activo from tbactividad_curso where scheduletype=$doncencia and curso=$Curso and anio=$Anio and periodo='".$Periodo."' and carrera=$Carrera and tipo= ANY(array[$TipoActividadArray]) order by fechaentrega;";
         else
-            return "select * from tbactividad_curso where scheduletype=$doncencia and curso=$Curso and anio=$Anio and periodo='".$Periodo."' and carrera=$Carrera order by fechaentrega;";
+            return "select idactividad,(CASE WHEN length(nombre)=0 THEN (select nombre from ing_tipoactividad where idtipoactividad=tipo)
+ 			ELSE nombre END),tipo,fechaentrega,ponderacion,scheduletype,activo from tbactividad_curso where scheduletype=$doncencia and curso=$Curso and anio=$Anio and periodo='".$Periodo."' and carrera=$Carrera order by fechaentrega;";
     }
     
     function queryGetPromedioEntregados($idActividad){
