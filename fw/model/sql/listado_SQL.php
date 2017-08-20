@@ -52,6 +52,8 @@ Class listado_SQL extends General_SQL {
     }
     
     function  queryGetAprobacionCurso($Curso,$Carrera,$Periodo,$Anio){
+        
+        
         return "select  
 	case when fecha isnull then 0
 			else 1
@@ -91,7 +93,8 @@ Class listado_SQL extends General_SQL {
     }
             
      function queryNombreActividad($Curso,$Periodo, $Carrera, $Anio){ //Agregar curso,periodo,carrera,anio
-        return "select  nombre,ponderacion,idactividad,fechaentrega from tbactividad_curso where
+        return "select  (CASE WHEN length(nombre)=0 THEN (select nombre from ing_tipoactividad where idtipoactividad=tipo)
+ 			ELSE nombre END),ponderacion,idactividad,fechaentrega from tbactividad_curso where
             curso=$Curso
             and carrera=$Carrera
             and periodo='$Periodo'
