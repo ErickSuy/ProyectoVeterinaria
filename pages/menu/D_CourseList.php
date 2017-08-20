@@ -141,7 +141,7 @@ if ($numero_filas > 0) {
 /** INICIO: INGRESO DE NOTAS DE ACTIVIDADES **/
 $_SESSION['regper'] = $objuser->getId();
 $cursos_actividades = $listado->DarListadoDeCursos1($periodo, $anio, $objuser->getId());
-//print_r($cursos_actividades);//Test
+
 // una variable de sesion para saber que grupo pertenece el usuario. Erick Suy'17
 $_SESSION['group'] =$objuser->getGroup();
 
@@ -159,6 +159,7 @@ if ($numero_filas1 > 0) {
         $carrera = trim($cursos_actividades[$i]['idcareer']);
         $tipo = $cursos_actividades[$i]['type'];
         $catedratico = $objuser->getId();
+       // print_r('curso: '.$codigo.'  '.$carrera.'  '.$seccion.' \n');
 
         $otros_docentes = $listado->DarListadoDocentesCurso($codigo,$index,$carrera,$anio,$periodo,$catedratico,$tipo);
         $docentes = '';
@@ -229,7 +230,7 @@ if (count($vListadoCursos)) {
             $lAcciones .= '<a href="#" class="easyui-menubutton" data-options="menu:\'#mm' . $i . '\'"><i class="fa fa-pencil"></i></a>';
             $lAcciones .= '<div id="mm' . $i . '" style="width:150px;">';
             //$bd,$Periodo,$Anio,$Carrera,$Curso
-            $sistema = verificar_sistemaHabilitado($base, $periodo, $anio,$vListadoCursos[$j]['car'], $vListadoCursos[$j]['cur']);
+            $sistema = verificar_sistemaHabilitado($base, $periodo, $anio,$vListadoCursos[$i]['car'], $vListadoCursos[$i]['cur']);
 
             while (list($key, $value) = each($vAcciones)) {
                 switch ($key) {
@@ -239,15 +240,16 @@ if (count($vListadoCursos)) {
                             $newValue = str_replace("creaactividad", "crearActividad", $value);
                             $newValue = str_replace("opcion=9", "opcion=1", $newValue);
                             $value=$newValue;
-                            $lAcciones .= '<div iconCls="fa fa-tasks" title='.$value.' onclick="window.location.href = \''. $value .'\'"">Zonas de curso</div>';
+                            $lAcciones .= '<div iconCls="fa fa-tasks" title="'.$vListadoCursos[$i]['car'].'" onclick="window.location.href = \''. $value .'\'"">Zonas de curso</div>';
                         }                        
                        //echo $value . '<br>';
                         break;
                     case 2 :
                         $lAcciones .= '<div iconCls="fa fa-flask" title="Carga de notas de las actividades correspondientes al laboratorio" onclick="window.location.href = \''. $value .'\'""> Laboratorio</div>';
                         break;
-                    default:
+                    default:                        
                         switch ($sistema){
+                        
                         case 1: //no existen calendario.
                              if($periodo==PRIMERA_RETRASADA_DEL_PRIMER_SEMESTRE || $periodo==SEGUNDA_RETRASADA_DEL_PRIMER_SEMESTRE ||
                                 $periodo==PRIMERA_RETRASADA_DEL_SEGUNDO_SEMESTRE || $periodo==SEGUNDA_RETRASADA_DEL_SEGUNDO_SEMESTRE){
@@ -260,13 +262,12 @@ if (count($vListadoCursos)) {
                             $lAcciones .= '<div iconCls="fa fa-check" title="Ingreso Notas Finales" onclick="window.location.href = \''. $value .'\'">Nota de Finales</div>';
                             break;
                         case 4: //existe aprobacion de curso.
-                            $lAcciones .= '<div iconCls="fa fa-check" title="Ingreso Notas Finales" onclick="window.location.href = \''. $value .'\'">Nota de Finales</div>';
+                            $lAcciones .= '<div iconCls="fa fa-check" title="Ingreso Notas Finales- Notas Aprobadas" onclick="window.location.href = \''. $value .'\'">Nota de Finales</div>';
                             break;
                         case 3://no existe info de actividades procesadas
                             $lAcciones .= '<div iconCls="fa fa-check" title="No se encuentra informacion de actividades" onclick="window.location.href = "#">Sin Actividades</div>';
                             break;
-                        }
-                        
+                        }                        
                 }
                 //$lAcciones .= '<div iconCls="fa fa-tasks" title='.$value.' onclick="window.location.href = \''. $value .'\'"">Zonas de curso tmp</div>';
             }
