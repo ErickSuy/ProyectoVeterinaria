@@ -81,11 +81,7 @@ function habilitacionSistema($bd,$Periodo,$Anio,$Carrera,$Curso){
         $fechaFin    = trim($regCalendario["finalfinales"]);
         $fechahoy    = date("Y")."-".date("m")."-".date("d");
         if (($fechahoy >= $fechaInicio) && ($fechahoy <= $fechaFin)){
-            //verificar si ya fue aprobado el curso.
-             if($Periodo==PRIMERA_RETRASADA_DEL_PRIMER_SEMESTRE || $Periodo==SEGUNDA_RETRASADA_DEL_PRIMER_SEMESTRE ||
-                                $Periodo==PRIMERA_RETRASADA_DEL_SEGUNDO_SEMESTRE || $Periodo==SEGUNDA_RETRASADA_DEL_SEGUNDO_SEMESTRE){
-                                return 100;
-                                }
+            //verificar si ya fue aprobado el curso.             
             $queryGetAprobacion = $gsql_na_c->queryGetAprobacionCurso($Curso, $Carrera, $Periodo, $Anio);
             $bd->query($queryGetAprobacion);
             $resultadoQuery=(($bd->next_record()) != null)? $bd->r():null;
@@ -98,6 +94,7 @@ function habilitacionSistema($bd,$Periodo,$Anio,$Carrera,$Curso){
             }
         }    
         else {
+            //obtiene si existen actividades creadas para el curso.
             $sqlbusca = $gsql_na_c->sistemaHabilitado_getActividades($Periodo,$Anio,$Curso,$Carrera);            
             $bd->query($sqlbusca);
             

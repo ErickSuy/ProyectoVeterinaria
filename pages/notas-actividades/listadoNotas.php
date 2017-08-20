@@ -14,6 +14,7 @@ include_once("$dir_portal/fw/view/lib/TemplatePower.php");
 include_once("$dir_portal/fw/model/sql/listado_SQL.php");
 include_once("$dir_portal/fw/view/validator/ManejoString.php");
 
+
 require "conectar.php"; /* archivo que maneja la conexion y la variable BD*/
 
 $_verificarSesion = true;
@@ -60,6 +61,14 @@ $manejoCadena= new ManejoString();
 $ManejoErrores="";
 
 /*******************************************************************************  DEFINICION FUNCIONES METODOS */
+function verificar_sistemaHabilitado($bd,$Periodo,$Anio,$Carrera,$Curso){
+    /*Este metodo se encargara de verificar si el sistema es apto para cargar
+      aactividades o presentarle al usuario la carga de finales.     */
+    return habilitacionSistema($bd,$Periodo,$Anio,$Carrera,$Curso);
+    //$_resVerificacion=100;
+    
+}
+
 function esModular($txtIndex, $txtCurso, $txtCarrera)
 {
     // false = Introductorio o basico
@@ -364,7 +373,13 @@ switch ($opcion) {
         break;
         }
 $tpl->gotoBlock('_ROOT');
-$tpl->assign("RegresarActividades", '<a href="../notas-actividades/crearActividad.php?opcion=1&curso='.$_SESSION["idcurso"].'&index='.$_SESSION["index"].'&carrera='.$_SESSION["carrera"].'&docentes='.$_SESSION["docentes"].'"><input type="button" name="btnRegresar" id="btnRegresar" class="nbtn rbtn btn_midi btn_exp_h okbutton" value="Regresar a listado de actividades" ></a>');
+$sistema = verificar_sistemaHabilitado($bd, $_SESSION["sPeriodo"], $_SESSION["sAnio"],$_SESSION["carrera"], $_SESSION["idcurso"]);
+
+if($sistema==100){
+    $tpl->assign("RegresarActividades", '<a href="../notas-actividades/crearActividad.php?opcion=1&curso='.$_SESSION["idcurso"].'&index='.$_SESSION["index"].'&carrera='.$_SESSION["carrera"].'&docentes='.$_SESSION["docentes"].'"><input type="button" name="btnRegresar" id="btnRegresar" class="nbtn rbtn btn_midi btn_exp_h okbutton" value="Regresar a listado de actividades" ></a>');
+}else{
+    $tpl->assign("RegresarActividades", '<a href="../menu/D_CourseList.php"><input type="button" name="btnRegresar" id="btnRegresar" class="nbtn rbtn btn_midi btn_exp_h okbutton" value="Regresar a listado de cursos" ></a>');
+}
 
 $tpl->newblock("botones");        
 $tpl->assign("txtCurso", $txtCurso);
