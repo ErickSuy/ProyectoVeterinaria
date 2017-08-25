@@ -9,7 +9,7 @@
  * $Id: db_pgsql.inc,v 1.9 2002/08/26 08:27:43 richardarcher Exp $
  *
  */
-error_reporting(E_ALL);
+error_reporting(0);
 
 include("config/DB_Params.php");
 
