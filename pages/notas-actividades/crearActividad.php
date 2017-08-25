@@ -987,7 +987,7 @@ function OpcionTresCinco_crearVistaNuevaEditarActividad($tpl,$idActividad){
             $tpl->assign("mensajeStrong", "Completa");
             if ($ResultadoActividad == null) {
                 $tpl->newBlock('enlaces');
-                $tpl->assign("grabarActividad", '<a id="btnEnviar" href="javascript:void(0);" onclick="crearActividad(false);" class="easyui-linkbutton icon_text icon ntooltip" style="display: inline-block;"><i class="fa fa-database fa-lg"></i><span>&nbsp;&nbsp;Grabar Actividad  </span></a>');
+                $tpl->assign("grabarActividad", '<a id="btnEnviar" href="javascript:void(0);" onclick="crearActividad(false);" class="easyui-linkbutton icon_text icon ntooltip" style="display: inline-block;"><i class="fa fa-floppy-o fa-lg"></i><span>&nbsp;&nbsp;Guardar Actividad  </span></a>');
             }
         }
     } else if ($zonaMaxima > $_SESSION["totalZonaActual"][2]) {
@@ -997,7 +997,7 @@ function OpcionTresCinco_crearVistaNuevaEditarActividad($tpl,$idActividad){
         $tpl->assign("mensaje", "Zona de Curso");
         if ($ResultadoActividad == null) {
             $tpl->newBlock('enlaces');
-            $tpl->assign("grabarActividad", '<a id="btnEnviar" href="javascript:void(0);" onclick="crearActividad(false);" class="easyui-linkbutton icon_text icon ntooltip" style="display: inline-block;"><i class="fa fa-database fa-lg"></i><span>&nbsp;&nbsp;Grabar Actividad   </span></a>');
+            $tpl->assign("grabarActividad", '<a id="btnEnviar" href="javascript:void(0);" onclick="crearActividad(false);" class="easyui-linkbutton icon_text icon ntooltip" style="display: inline-block;"><i class="fa fa-floppy-o fa-lg"></i><span>&nbsp;&nbsp;Guardar Actividad   </span></a>');
         }
     }
 
