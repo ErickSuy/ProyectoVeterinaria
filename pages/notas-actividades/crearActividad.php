@@ -1003,7 +1003,7 @@ function OpcionTresCinco_crearVistaNuevaEditarActividad($tpl,$idActividad){
 
     if ($ResultadoActividad != null) {
         $tpl->newBlock('enlaces');
-        $tpl->assign("grabarActividad", '<a id="btnEnviar" href="javascript:void(0);" onclick="crearActividad(true);" class="easyui-linkbutton icon_text icon ntooltip" style="display: inline-block;"><i class="fa fa-database fa-lg"></i><span>&nbsp;&nbsp;Editar Actividad   </span></a>');
+        $tpl->assign("grabarActividad", '<a id="btnEnviar" href="javascript:void(0);" onclick="crearActividad(true);" class="easyui-linkbutton icon_text icon ntooltip" style="display: inline-block;"><i class="fa fa-floppy-o fa-lg"></i><span>&nbsp;&nbsp;Guardar cambios   </span></a>');
     }
 }
 
