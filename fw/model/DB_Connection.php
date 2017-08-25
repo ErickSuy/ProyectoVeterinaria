@@ -123,16 +123,18 @@ class DB_Connection
         else
             $this->connect2();
 
-        if ($this->Debug)
-            printf("<br>Debug: query = %s<br>\n", $Query_String);
+        if ($this->Debug){
+            //printf("<br>Debug: query = %s<br>\n", $Query_String);
+	}
 
-        restore_error_handler();
-        set_error_handler(array(&$this, 'errores')); // es necesario para evitar los warnings
+
+        //restore_error_handler();
+        //set_error_handler(array(&$this, 'errores')); // es necesario para evitar los warnings
         $this->Query_ID = pg_Exec($this->Link_ID, $Query_String);
 
         $this->Error = pg_ErrorMessage($this->Link_ID);
 
-        restore_error_handler();
+        //restore_error_handler();
         $this->Row = 0;
 
         if ($this->Link_ID)
@@ -140,10 +142,10 @@ class DB_Connection
         $this->Errno = ($this->Error == "") ? 0 : 1;
         if (!$this->Query_ID) {
             // las siguientes 2 lineas se descomentarizan para debuguear errores
-            $this->halt("Invalid SQL: ".$Query_String);
+            //$this->halt("Invalid SQL: ".$Query_String);
             //$this->errores();
-            $valor = $this->Error[8] . $this->Error[9] . $this->Error[10];
-            $this->ValorError = $valor + 0;
+            //$valor = $this->Error[8] . $this->Error[9] . $this->Error[10];
+            //$this->ValorError = $valor + 0;
         }
 
         return $this->Query_ID;
