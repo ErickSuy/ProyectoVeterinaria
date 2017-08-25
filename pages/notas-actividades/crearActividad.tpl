@@ -280,7 +280,7 @@
                                                                         <input name="txtIdActividad" type="hidden" id="txtIdActividad" value="{txtIdActividad}" size="10" />
                                                                         <td class="page_col1">Nombre de la actividad</td>
                                                                         <td class="page_col2">
-                                                                            <input name="txtNombreActividad" type="text" id="txtNombreActividad" value="{txtNombreActividad}" placeholder="Máximo 20 carácteres" maxlength="20" />
+                                                                            <input name="txtNombreActividad" type="text" id="txtNombreActividad" value="{txtNombreActividad}" placeholder="Máximo 60 carácteres" maxlength="60" />
                                                                             <span id="msg_nombre" class="msg-danger-txt"></span>
                                                                         </td>                                                                        
                                                                     </tr>
