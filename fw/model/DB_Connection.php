@@ -128,13 +128,13 @@ class DB_Connection
 	}
 
 
-        //restore_error_handler();
-        //set_error_handler(array(&$this, 'errores')); // es necesario para evitar los warnings
+        restore_error_handler();
+        set_error_handler(array(&$this, 'errores')); // es necesario para evitar los warnings
         $this->Query_ID = pg_Exec($this->Link_ID, $Query_String);
 
         $this->Error = pg_ErrorMessage($this->Link_ID);
 
-        //restore_error_handler();
+        restore_error_handler();
         $this->Row = 0;
 
         if ($this->Link_ID)
