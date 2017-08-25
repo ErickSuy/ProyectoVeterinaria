@@ -10,10 +10,6 @@
  *
  */
 error_reporting(0); //evitar warrings de php.
-<<<<<<< HEAD
-
-=======
->>>>>>> DevNotasActividades
 include("config/DB_Params.php");
 
 class DB_Connection
