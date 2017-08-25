@@ -232,8 +232,8 @@ function crearActividad(actualizar){
     var punteo;
     
     var longitudNombre =$('#txtNombreActividad').val().length;
-    if(longitudNombre<=0 || longitudNombre >20){        
-        $('#msg_nombre').html('*Debe especificar un nombre válido con longitud menor a 20').show();
+    if(longitudNombre<=0 || longitudNombre >60){        
+        $('#msg_nombre').html('*Debe especificar un nombre válido con longitud menor a 60').show();
         $('#txtNombreActividad').select();
         $('#txtNombreActividad').focus();
         return false;
