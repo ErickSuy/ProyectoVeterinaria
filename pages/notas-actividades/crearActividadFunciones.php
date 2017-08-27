@@ -260,10 +260,10 @@ function agregarActividad(){
         $zonaMaxima = (esModular($index, $curso, $carrera)) ? ZONA_MODULAR :  ZONA_INTROBASICVACAS;
     
     $queryValidar=$controladorCrearActividad->queryValidarActividad($anio,$periodo,$curso,$carrera, 
-            cambiarFormatoFecha($fecha), $crearla, $zonaMaxima, $ponderacion, $tipo, $_esActualizacion,$notaAnterior);
+            cambiarFormatoFecha($fecha), $crearla, $zonaMaxima, $ponderacion, $tipo, $_esActualizacion,$notaAnterior,$idActividaActualizacion);
     
     $bd->query($queryValidar);   
-    print_r($anio.'  '.$periodo.'  '.$curso.'  '.$carrera.'  '.cambiarFormatoFecha($fecha).'  '.$crearla.'  '.$zonaMaxima.'  '.$ponderacion.'  '.$tipo.'  '. $_esActualizacion.'  '.$notaAnterior);
+    
     while (($bd->next_record()) != null) {
         $InsertResult = $bd->r();
         $resultado.=$InsertResult[0];
