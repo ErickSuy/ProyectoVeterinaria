@@ -311,7 +311,11 @@ function enviarDatosActividadReposicion(crearla,actualizacion){
         },
         error: function (data) {
             //alert(JSON.stringify(data));
-            $("#mensajeAlert").html('<div class="alert alert-danger"><h4><i class="fa fa-info-circle fa-lg"></i> Creacion de Actividad Error </h4>' + data + '</div>');
+            if(actualizacion){
+                $("#mensajeAlert").html('<div class="alert alert-danger"><h4><i class="fa fa-info-circle fa-lg"></i> Modificacion de Actividad Error </h4>' + data + '</div>');
+            }else{
+                $("#mensajeAlert").html('<div class="alert alert-danger"><h4><i class="fa fa-info-circle fa-lg"></i> Creacion de Actividad Error </h4>' + data + '</div>');
+            }
         },
         success: function (data) {
             if (data.indexOf("¿Desea crearla?") != -1) {
@@ -320,7 +324,12 @@ function enviarDatosActividadReposicion(crearla,actualizacion){
                     enviarDatosActividad(true,actualizacion);
                 }
             }else{
-                $("#mensajeAlert").html('<div class="alert alert-info"><h4><i class="fa fa-info-circle fa-lg"></i> Creacion de Actividad </h4>' + data + '</div>');
+                if(actualizacion){
+                    $("#mensajeAlert").html('<div class="alert alert-info"><h4><i class="fa fa-info-circle fa-lg"></i> Modificacion de Actividad </h4>' + data + '</div>');
+                }else{
+                    $("#mensajeAlert").html('<div class="alert alert-info"><h4><i class="fa fa-info-circle fa-lg"></i> Creacion de Actividad </h4>' + data + '</div>');
+                }
+                
             }
         }
     });
@@ -335,8 +344,10 @@ function enviarDatosActividad(crearla,actualizacion){
         beforeSend: function () {
         },
         error: function (data) {
-            //alert(JSON.stringify(data));
-            $("#mensajeAlert").html('<div class="alert alert-danger"><h4><i class="fa fa-info-circle fa-lg"></i> Creacion de Actividad Error </h4>' + data + '</div>');
+            if(actualizacion){
+                $("#mensajeAlert").html('<div class="alert alert-danger"><h4><i class="fa fa-info-circle fa-lg"></i> Modificacion de Actividad Error </h4>' + data + '</div>');
+            }else
+                $("#mensajeAlert").html('<div class="alert alert-danger"><h4><i class="fa fa-info-circle fa-lg"></i> Creacion de Actividad Error </h4>' + data + '</div>');
         },
         success: function (data) {
             if (data.indexOf("¿Desea crearla?") != -1) {
@@ -346,9 +357,17 @@ function enviarDatosActividad(crearla,actualizacion){
                 }
             }else{
                 if (data.toLowerCase().indexOf("exito") >= 0){
-                    $("#mensajeAlert").html('<div class="alert alert-info"><h4><i class="fa fa-info-circle fa-lg"></i> Creacion de Actividad </h4>' + data + '</div>');
+                    if(actualizacion){
+                        $("#mensajeAlert").html('<div class="alert alert-info"><h4><i class="fa fa-info-circle fa-lg"></i> Modificacion de Actividad </h4>' + data + '</div>');
+                    }else{
+                        $("#mensajeAlert").html('<div class="alert alert-info"><h4><i class="fa fa-info-circle fa-lg"></i> Creacion de Actividad </h4>' + data + '</div>');
+                    }
                 }else{
-                    $("#mensajeAlert").html('<div class="alert alert-danger"><h4><i class="fa fa-info-circle fa-lg"></i> Creacion de Actividad </h4>' + data + '</div>');
+                    if(actualizacion){
+                        $("#mensajeAlert").html('<div class="alert alert-danger"><h4><i class="fa fa-info-circle fa-lg"></i> Modificacion de Actividad </h4>' + data + '</div>');
+                    }else{
+                        $("#mensajeAlert").html('<div class="alert alert-danger"><h4><i class="fa fa-info-circle fa-lg"></i> Creacion de Actividad </h4>' + data + '</div>');
+                    }
                 }
                 
             }

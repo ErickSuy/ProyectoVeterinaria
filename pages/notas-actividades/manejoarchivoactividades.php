@@ -111,9 +111,9 @@ function bloqueCargaNotas($txtIdActividad,$txtCurso,$txtCarrera,$txtAnio,$txtPer
 
     $tpl->newblock("carganotas");
     $tpl->assign("vCurso", $txtCurso);
-    $tpl->assign("vNombre", $_SESSION["nombrecorto"]);
+    $tpl->assign("vNombre",$_SESSION["nombreCurso"]);
     $tpl->assign("vCarrera", $obj_cad->StringCarrera('0' . $txtCarrera));
-    $tpl->assign("vPeriodo", $_SESSION["nombreperiodo"]);
+    $tpl->assign("vPeriodo", $obj_cad->funTextoPeriodo($_SESSION["sPeriodo"]));
     $tpl->assign("vAnio", $txtAnio);
     $tpl->assign("vFecha", Date("d-m-Y"));
     $tpl->assign("vHora", Date("H:i"));
@@ -620,8 +620,8 @@ switch ($opcion) {
                                     $_cambiaNotaExistente = cambiarNotasExistentes($bd,$_notasExistentes, $carnet, $nota, $_SESSION['regper'], $txtIdActividad, $_erroresManejables1, $_listaErrores1);
                                     if ($_cambiaNotaExistente === true) {
                                         $reg = $_SESSION['regper'];
-                                        $group_user = $_SESSION['group'];
-                                        $query = "select * from actualizarNotasActividad($reg,$group_user,'$txtIdActividad','$nota',$carnet);";
+                                        $goup = $_SESSION['group'];
+                                        $query = "select * from actualizarNotasActividad($reg,$group,'$txtIdActividad','$nota',$carnet);";
                                         $bd->query($query);
                                         $resultado = "";
                                         while (($bd->next_record()) != null) {
