@@ -263,6 +263,7 @@ function agregarActividad(){
             cambiarFormatoFecha($fecha), $crearla, $zonaMaxima, $ponderacion, $tipo, $_esActualizacion,$notaAnterior);
     
     $bd->query($queryValidar);   
+    print_r($anio.'  '.$periodo.'  '.$curso.'  '.$carrera.'  '.cambiarFormatoFecha($fecha).'  '.$crearla.'  '.$zonaMaxima.'  '.$ponderacion.'  '.$tipo.'  '. $_esActualizacion.'  '.$notaAnterior);
     while (($bd->next_record()) != null) {
         $InsertResult = $bd->r();
         $resultado.=$InsertResult[0];
