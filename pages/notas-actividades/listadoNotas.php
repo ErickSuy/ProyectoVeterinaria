@@ -110,6 +110,27 @@ function getZonaMinima(){
     }
 }
 
+function isZonaCompleta(){
+        $zonaMaxima =0;
+        if( $_SESSION["idcurso"]==id_EPS){
+            $zonaMaxima=ZONA_EPS;
+        }else if(esModular($_SESSION["index"], $_SESSION["idcurso"], $_SESSION["carrera"])){
+            $zonaMaxima=ZONA_MODULAR;
+            $parciales=PARCIAL_MODULAR;
+        }else
+        {
+            $zonaMaxima=ZONA_INTROBASICVACAS;
+            $parciales=PARCIAL_INTROBASICVACAS;
+        }
+                             
+        
+        if($zonaMaxima==$_SESSION["totalZonaActual"][2]){
+            return true;
+        }else if($zonaMaxima>$_SESSION["totalZonaActual"][2]){
+            return false;
+        }
+}
+
 function getPorcentajeAsisitencia($CantiActividades,$CantidadFaltas){
     //Articulo 30 Normativo promocion FMVZ
     /* "...el estudiante deberá cumplir con el 80 % de las actividades descritas
@@ -307,12 +328,20 @@ function aprobarNotasCurso($tpl,$curso,$carrera,$periodo,$anio){
     global $controladorListadoActividad;
     global $bd;
     
-    if($_SESSION[CursoAprobado] == 1){
+    if($_SESSION["totalZonaActual"]==NULL){
         $tpl->newblock("mensaje");
-        $tpl->assign("mensaje", '<div class="alert alert-success">
-            <h4><i class="fa fa-info"></i> NOTAS DE ACTIVIDADES</h4>
-            Este es el reporte de notas de actividades ya aprobadas.
-            </div>');
+            $tpl->assign("mensaje", '<div class="alert alert-danger"">'
+                    . '<h4><i class="fa fa-info"></i> NOTAS DE ACTIVIDADES</h4>Datos, no encontrados reporte a Unidad Academica FMVZ</div>');
+           return;
+    }
+    
+    if(isZonaCompleta()){
+        if($_SESSION[CursoAprobado] == 1){
+            $tpl->newblock("mensaje");
+            $tpl->assign("mensaje", '<div class="alert alert-success">
+                <h4><i class="fa fa-info"></i> NOTAS DE ACTIVIDADES</h4>
+                Este es el reporte de notas de actividades ya aprobadas.
+                </div>');
             return ;
         }else{
             // APROBAR TODAS LAS NOTAS
@@ -331,8 +360,6 @@ function aprobarNotasCurso($tpl,$curso,$carrera,$periodo,$anio){
                 $ERROR+=(!$bd->query($queryAprobacion)) ? 1 :  0;
             }
             
-            
-            
             if ($ERROR == 0) {
                 $bd->query($controladorListadoActividad->commit());
                 $ManejoErrores = "Aprobacion de notas de curso exitosa";
@@ -346,6 +373,12 @@ function aprobarNotasCurso($tpl,$curso,$carrera,$periodo,$anio){
             $tpl->assign("mensaje", '<div class="alert alert-success">'
                     . '<h4><i class="fa fa-info"></i> NOTAS DE ACTIVIDADES</h4>'.$ManejoErrores.'</div>');
         }
+    
+    }else{
+         $tpl->newblock("mensaje");
+            $tpl->assign("mensaje", '<div class="alert alert-danger"">'
+                    . '<h4><i class="fa fa-info"></i> NOTAS DE ACTIVIDADES</h4>Zona incompleta, necesita completar la zona del curso para aprobar las notas.</div>');
+    }
     
 }
 /*******************************************************************************  INICIO LOGICA DEL SISTEMA*/
