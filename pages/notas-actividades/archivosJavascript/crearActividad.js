@@ -187,7 +187,8 @@ function getCambios() {
                 $("#mensajeAlert").html('<div class="alert alert-danger"><h4><i class="fa fa-info-circle fa-lg"></i> Edicion de Notas </h4>'+data+'</div>');
             }else{
                 $("#mensajeAlert").html('<div></div>');
-            }            
+            }                
+	    $('#dgcursos').datagrid('acceptChanges');
             $('#dgcursos').datagrid('reload');
         }
         });
