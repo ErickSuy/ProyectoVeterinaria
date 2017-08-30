@@ -603,7 +603,7 @@ switch ($opcion) {
                                 $carnet = CompletaCarnet($datos[0]);
                                 $nota = $datos[1];
                                 
-                                if($nota=="nsp"){
+                                if($nota=="nsp" || $nota=="NSP"){
                                     $nota=-1;
                                 }
                                 if (is_numeric($nota)) {
@@ -618,9 +618,9 @@ switch ($opcion) {
                                 //print_r($_errorManejable."  -- ".$nota);
                                 if ($_errorManejable === false) {
                                     $_cambiaNotaExistente = cambiarNotasExistentes($bd,$_notasExistentes, $carnet, $nota, $_SESSION['regper'], $txtIdActividad, $_erroresManejables1, $_listaErrores1);
-                                    if ($_cambiaNotaExistente === true) {
+                                    if ($_cambiaNotaExistente == true) {
                                         $reg = $_SESSION['regper'];
-                                        $goup = $_SESSION['group'];
+                                        $group = $_SESSION['group'];
                                         $query = "select * from actualizarNotasActividad($reg,$group,'$txtIdActividad','$nota',$carnet);";
                                         $bd->query($query);
                                         $resultado = "";
