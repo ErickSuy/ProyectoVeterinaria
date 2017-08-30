@@ -622,6 +622,7 @@ switch ($opcion) {
                                         $reg = $_SESSION['regper'];
                                         $group = $_SESSION['group'];
                                         $query = "select * from actualizarNotasActividad($reg,$group,'$txtIdActividad','$nota',$carnet);";
+print_r($query);
                                         $bd->query($query);
                                         $resultado = "";
                                         while (($bd->next_record()) != null) {
