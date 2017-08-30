@@ -2,7 +2,17 @@ $(function () {
     var ColumnaName=null;//actual columna    
     var ColumnNames=null;//array
     var indexActual=-1;        
-   
+    
+    var textoTmp='';
+    
+    
+    /*****
+     * Temporalmente cuando se le da click se blanqueara la casilla si no existe cambio 
+     * pondra nuevamente el valor que tenia actualmente     * 
+     */
+    var cellTextTemp=null;
+    var cellindexTemp=null;
+    var cellFieldTemp=null;
    
    $('#dgcursos').edatagrid({ /*propiedades de dataGrid*/
         pagination: true,
@@ -14,6 +24,12 @@ $(function () {
         queryParams: {
             llamar: 'getNotasJson'
         },
+        onDblClickCell: function(index,field,value){
+                cellindexTemp=index;
+		$(this).datagrid('beginEdit', index);
+		var ed = $(this).datagrid('getEditor', {index:index,field:field});
+                $(ed.target).numberbox('setValue', '');
+	},
         rowStyler: function (index, row) {
             if (index % 2 == 0) {
                 return 'color: #3d3d3d;text-transform: capitalize;font-weight: lighter;';
@@ -25,7 +41,10 @@ $(function () {
             $('#dgcursos').datagrid('endEdit', indexActual);
             indexActual = rowIndex;
         }, onClickCell: function (index, field, value) {
-            ColumnaName = field;
+            ColumnaName = field;  
+        },
+        onSelect: function(index,row){
+            
         },
         onLoadSuccess: function (data) {
             
@@ -139,6 +158,7 @@ $(function () {
     
     
 });
+
 /*------------------------------------------ FORMATO DE FECHA*/
 function myformatter(date) {
     var y = date.getFullYear();
@@ -187,8 +207,9 @@ function getCambios() {
                 $("#mensajeAlert").html('<div class="alert alert-danger"><h4><i class="fa fa-info-circle fa-lg"></i> Edicion de Notas </h4>'+data+'</div>');
             }else{
                 $("#mensajeAlert").html('<div></div>');
-            }                
-	    $('#dgcursos').datagrid('acceptChanges');
+                
+            } 
+            $('#dgcursos').datagrid('acceptChanges');
             $('#dgcursos').datagrid('reload');
         }
         });
