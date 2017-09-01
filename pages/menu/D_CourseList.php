@@ -265,7 +265,7 @@ if (count($vListadoCursos)) {
                             $lAcciones .= '<div iconCls="fa fa-check" title="Ingreso Notas Finales- Notas Aprobadas" onclick="window.location.href = \''. $value .'\'">Nota de Finales</div>';
                             break;
                         case 3://no existe info de actividades procesadas
-                            $lAcciones .= '<div iconCls="fa fa-check" title="No se encuentra informacion de actividades" onclick="window.location.href = "#">Sin Actividades</div>';
+                            $lAcciones .= '<div iconCls="fa fa-tasks" title="'.$vListadoCursos[$i]['car'].'" onclick="window.location.href = \''. $value .'\'"">Zonas de curso</div>';
                             break;
                         }                        
                 }
