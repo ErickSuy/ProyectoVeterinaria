@@ -92,12 +92,19 @@ $(function () {
                            if(ColumnaName!=null){
                                $("#dgcursos").datagrid('editCell', {index: index - 1,field: ColumnaName});
                                var ed = $("#dgcursos").datagrid('getEditor', {index:index - 1,field:ColumnaName});
-                               $(ed.target).numberbox('setValue', '');
+                               var v = $("#dgcursos").datagrid('getRows')[index].ColumnaName;
+                               if(v=='0'){
+                                    $(ed.target).numberbox('setValue', '');
+                               }
+                               
                            }else{
                                var field ="'"+ColumnNames[0]+"'";
                                $("#dgcursos").datagrid('editCell', {index: index - 1,field: field});
                                var ed = $("#dgcursos").datagrid('getEditor', {index:index - 1,field:field});
-                               $(ed.target).numberbox('setValue', '');
+                               var v = $("#dgcursos").datagrid('getRows')[index].field;
+                               if(v=='0'){
+                                    $(ed.target).numberbox('setValue', '');
+                               }
                            }                                
                            indexActual=index-1;
                         } else {
