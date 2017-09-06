@@ -122,23 +122,22 @@ $(function () {
                             if (ColumnaName != null) {
                                 $("#dgcursos").datagrid('editCell', {index: index + 1, field: ColumnaName});
                                 var ed = $("#dgcursos").datagrid('getEditor', {index:index + 1,field:ColumnaName});
-                               var v = $("#dgcursos").datagrid('getRows')[index].ColumnaName;
-                               if(v=='0'){
-                                    $(ed.target).numberbox('setValue', '');
-                               }
+                                if($(ed.target).textbox('getValue')==''|| $(ed.target).textbox('getValue')=='0' || $(ed.target).textbox('getValue')=='0.00'){
+                                    $(ed.target).textbox('clear').textbox('textbox').focus();
+                                }
+                               
                             } else {
                                 var field = "'" + ColumnNames[0] + "'";
                                 $("#dgcursos").datagrid('editCell', {index: index + 1, field: field});
                                 var ed = $("#dgcursos").datagrid('getEditor', {index:index + 1,field:field});
-                               var v = $("#dgcursos").datagrid('getRows')[index].field;
-                               if(v=='0'){
-                                    $(ed.target).numberbox('setValue', '');
-                               }
+                                if($(ed.target).textbox('getValue')==''|| $(ed.target).textbox('getValue')=='0' || $(ed.target).textbox('getValue')=='0.00'){
+                                    $(ed.target).textbox('clear').textbox('textbox').focus();
+                                }
                             }
                             indexActual=index+1;
 			} else {
 				$('#dgcursos').datagrid('selectRow', 0);
-                                indexActual=0;
+                indexActual=0;
 			}
 			break;
                 case 13:	// down enter
@@ -151,23 +150,21 @@ $(function () {
                             if (ColumnaName != null) {
                                 $("#dgcursos").datagrid('editCell', {index: index + 1, field: ColumnaName});
                                 var ed = $("#dgcursos").datagrid('getEditor', {index:index + 1,field:ColumnaName});
-                                var v = $("#dgcursos").datagrid('getRows')[index].ColumnaName;
-                               if(v=='0'){
-                                    $(ed.target).numberbox('setValue', '');
-                               }
+                                if($(ed.target).textbox('getValue')==''|| $(ed.target).textbox('getValue')=='0' || $(ed.target).textbox('getValue')=='0.00'){
+                                    $(ed.target).textbox('clear').textbox('textbox').focus();
+                                }
                             } else {
                                 var field = "'" + ColumnNames[0] + "'";
                                 $("#dgcursos").datagrid('editCell', {index: index + 1, field: field});
                                 var ed = $("#dgcursos").datagrid('getEditor', {index:index + 1,field:field});
-                                var v = $("#dgcursos").datagrid('getRows')[index].field;
-                               if(v=='0'){
-                                    $(ed.target).numberbox('setValue', '');
-                               }
+                                if($(ed.target).textbox('getValue')==''|| $(ed.target).textbox('getValue')=='0' || $(ed.target).textbox('getValue')=='0.00'){
+                                    $(ed.target).textbox('clear').textbox('textbox').focus();
+                                }
                             }
                             indexActual=index+1;
 			} else {
 				$('#dgcursos').datagrid('selectRow', 0);
-                                indexActual=0;
+                indexActual=0;
 			}
 			break;
 	}
