@@ -317,7 +317,7 @@
                                                                     <tr>
                                                                         <td class="page_col1">Ponderación</td>
                                                                         <td class="page_col2">
-                                                                            <input name="txtPonderacion" type="text" id="txtPonderacion" value="{txtPonderacion}"  placeholder="Decimal con coma"   
+                                                                            <input name="txtPonderacion" type="text" id="txtPonderacion" value="{txtPonderacion}"  placeholder="Decimal con punto"   
                                                                                    onkeypress="return (event.charCode >= 48 && event.charCode <= 57) ||  
                                                                                    event.charCode == 44 ||event.charCode == 46 || event.charCode == 0 "/>
                                                                             <span id="msg_ponderacion" class="msg-danger-txt"></span>
